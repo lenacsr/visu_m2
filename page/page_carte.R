@@ -93,9 +93,9 @@ pageCarteServer <- function(id, dataset) {
     observe({
       if (!exists("gender")) return(NULL)
       
-      c_indicators <- gender %>%
-        select(INDICATOR, INDICATOR_LABEL) %>%
-        distinct() %>%
+      c_indicators <- gender |>
+        select(INDICATOR, INDICATOR_LABEL) |>
+        distinct() |>
         arrange(INDICATOR_LABEL)
       
       c_choices_ind <- setNames(c_indicators$INDICATOR, c_indicators$INDICATOR_LABEL)
@@ -107,13 +107,13 @@ pageCarteServer <- function(id, dataset) {
       if (!exists("gender")) return(NULL)
       req(input$indicator)
       
-      c_filtered <- gender %>% filter(INDICATOR == input$indicator)
+      c_filtered <- gender |> filter(INDICATOR == input$indicator)
       
       # Années disponibles
-      c_years <- c_filtered %>%
-        filter(!is.na(value)) %>%
-        pull(year) %>%
-        unique() %>%
+      c_years <- c_filtered |>
+        filter(!is.na(value)) |>
+        pull(year) |>
+        unique() |>
         sort(decreasing = TRUE)
       
       if (length(c_years) > 0) {
@@ -121,9 +121,9 @@ pageCarteServer <- function(id, dataset) {
       }
       
       # Sexe et Ratio
-      c_sex_choices <- c_filtered %>%
-        select(SEX, SEX_LABEL) %>%
-        distinct() %>%
+      c_sex_choices <- c_filtered |>
+        select(SEX, SEX_LABEL) |>
+        distinct() |>
         arrange(SEX_LABEL)
       
       if (nrow(c_sex_choices) > 0) {
@@ -134,9 +134,9 @@ pageCarteServer <- function(id, dataset) {
       }
       
       # Âge
-      c_age_choices <- c_filtered %>%
-        select(AGE, AGE_LABEL) %>%
-        distinct() %>%
+      c_age_choices <- c_filtered |>
+        select(AGE, AGE_LABEL) |>
+        distinct() |>
         arrange(AGE_LABEL)
       
       if (nrow(c_age_choices) > 0) {
@@ -152,9 +152,9 @@ pageCarteServer <- function(id, dataset) {
       
       # si on ne peut pas breakdown age
       c_age_value <- if (is.null(input$age)) {
-        gender %>%
-          filter(INDICATOR == input$indicator) %>%
-          pull(AGE) %>%
+        gender |>
+          filter(INDICATOR == input$indicator) |>
+          pull(AGE) |>
           first()
       } else {
         input$age
@@ -185,7 +185,7 @@ pageCarteServer <- function(id, dataset) {
         c_male_code <- "M"
         
         # Filtrer pour Femmes
-        c_data_female <- gender %>%
+        c_data_female <- gender |>
           filter(
             INDICATOR == input$indicator,
             SEX == c_female_code,
@@ -194,16 +194,16 @@ pageCarteServer <- function(id, dataset) {
           )
         #pour updater la carte avec les catégories de l'indicateur
         if (!is.null(c_comp_value)) {
-          c_data_female <- c_data_female %>%
+          c_data_female <- c_data_female |>
             filter(COMP_BREAKDOWN_1_LABEL == c_comp_value)
         }
         #pour updater la carte avec les sous catégories
         if (!is.null(c_sous_comp_value)) {
-          c_data_female <- c_data_female %>%
+          c_data_female <- c_data_female |>
             filter(COMP_BREAKDOWN_2_LABEL == c_sous_comp_value)
         }
         # Filtrer pour Hommes
-        c_data_male <- gender %>%
+        c_data_male <- gender |>
           filter(
             INDICATOR == input$indicator,
             SEX == c_male_code,
@@ -212,13 +212,13 @@ pageCarteServer <- function(id, dataset) {
           )
         #pour updater la carte avec les catégories de l'indicateur
         if (!is.null(c_comp_value)) {
-          c_data_male <- c_data_male %>%
+          c_data_male <- c_data_male |>
             filter(COMP_BREAKDOWN_1_LABEL == c_comp_value)
         }
         
         #pour updater la carte avec les sous catégories
         if (!is.null(c_sous_comp_value)) {
-          c_data_male <- c_data_male %>%
+          c_data_male <- c_data_male |>
             filter(COMP_BREAKDOWN_2_LABEL == c_sous_comp_value)
         }
         if (nrow(c_data_female) == 0 || nrow(c_data_male) == 0) {
@@ -228,39 +228,39 @@ pageCarteServer <- function(id, dataset) {
         
         # Appliquer la fenêtre glissante pour les femmes
         if (c_window_size == 0) {
-          c_female_filtered <- c_data_female %>%
-            filter(year == c_target_year) %>%
+          c_female_filtered <- c_data_female |>
+            filter(year == c_target_year) |>
             select(REF_AREA, REF_AREA_LABEL, year_exact_f = year, value_female = value)
         } else {
-          c_female_filtered <- c_data_female %>%
+          c_female_filtered <- c_data_female |>
             filter(year >= (c_target_year - c_window_size) & 
-                     year <= (c_target_year + c_window_size)) %>%
-            mutate(year_diff = abs(year - c_target_year)) %>%
-            group_by(REF_AREA) %>%
-            slice_min(year_diff, n = 1, with_ties = FALSE) %>%
-            ungroup() %>%
+                     year <= (c_target_year + c_window_size)) |>
+            mutate(year_diff = abs(year - c_target_year)) |>
+            group_by(REF_AREA) |>
+            slice_min(year_diff, n = 1, with_ties = FALSE) |>
+            ungroup() |>
             select(REF_AREA, REF_AREA_LABEL, year_exact_f = year, value_female = value)
         }
         
         # Appliquer la fenêtre glissante pour les hommes
         if (c_window_size == 0) {
-          c_male_filtered <- c_data_male %>%
-            filter(year == c_target_year) %>%
+          c_male_filtered <- c_data_male |>
+            filter(year == c_target_year) |>
             select(REF_AREA, year_exact_m = year, value_male = value)
         } else {
-          c_male_filtered <- c_data_male %>%
+          c_male_filtered <- c_data_male |>
             filter(year >= (c_target_year - c_window_size) & 
-                     year <= (c_target_year + c_window_size)) %>%
-            mutate(year_diff = abs(year - c_target_year)) %>%
-            group_by(REF_AREA) %>%
-            slice_min(year_diff, n = 1, with_ties = FALSE) %>%
-            ungroup() %>%
+                     year <= (c_target_year + c_window_size)) |>
+            mutate(year_diff = abs(year - c_target_year)) |>
+            group_by(REF_AREA) |>
+            slice_min(year_diff, n = 1, with_ties = FALSE) |>
+            ungroup() |>
             select(REF_AREA, year_exact_m = year, value_male = value)
         }
         
         # Joindre et calculer le ratio
-        c_result <- c_female_filtered %>%
-          inner_join(c_male_filtered, by = "REF_AREA") %>%
+        c_result <- c_female_filtered |>
+          inner_join(c_male_filtered, by = "REF_AREA") |>
           mutate(
             value = value_female / value_male,
             INDICATOR_LABEL = paste0(unique(c_data_female$INDICATOR_LABEL), " - Ratio F/M"),
@@ -272,7 +272,7 @@ pageCarteServer <- function(id, dataset) {
             } else {
               paste0("F:", year_exact_f, " M:", year_exact_m)
             }
-          ) %>%
+          ) |>
           select(REF_AREA, REF_AREA_LABEL, INDICATOR_LABEL, 
                  SEX_LABEL, AGE_LABEL, year, year_exact, value, 
                  value_female, value_male)
@@ -286,47 +286,32 @@ pageCarteServer <- function(id, dataset) {
         
       } else {
         # Mode normal (sexe spécifique) (sans ratio)
-        c_base_data <- gender %>%
+        c_base_data <- gender |>
           filter(
             INDICATOR == input$indicator,
             SEX == input$sex,
             AGE == c_age_value,
             !is.na(value)
           )
-        # pour breakdown les cat de l'indicateur
-        
-        #DIAGNOSTIC
-        cat("Nombre de lignes avant filtrage:", nrow(c_base_data), "\n")
-        cat("Valeur c_comp_value:", c_comp_value, "\n")
-        cat("Valeur c_sous_comp_value:", c_sous_comp_value, "\n")
-        if (!is.null(c_comp_value)) {
-          c_base_data <- c_base_data %>%
-            filter(COMP_BREAKDOWN_1_LABEL == c_comp_value)
-          cat("Après filtrage COMP_1:", nrow(c_base_data), "\n")
-        }
-        # pour breakdown les sous cat de l'indicateur
-        
-        
-        
         if (!is.null(c_sous_comp_value)) {
-          c_base_data <- c_base_data %>%
+          c_base_data <- c_base_data |>
             filter(COMP_BREAKDOWN_2_LABEL == c_sous_comp_value)
         }
         if (c_window_size == 0) {
-          c_result <- c_base_data %>%
-            filter(year == c_target_year) %>%
+          c_result <- c_base_data |>
+            filter(year == c_target_year) |>
             select(REF_AREA, REF_AREA_LABEL, INDICATOR_LABEL, 
                    SEX_LABEL, AGE_LABEL, year, value, year_exact = year)
         } else {
-          c_result <- c_base_data %>%
+          c_result <- c_base_data |>
             filter(year >= (c_target_year - c_window_size) & 
-                     year <= (c_target_year + c_window_size)) %>%
-            mutate(year_diff = abs(year - c_target_year)) %>%
-            group_by(REF_AREA) %>%
-            slice_min(year_diff, n = 1, with_ties = FALSE) %>%
-            ungroup() %>%
+                     year <= (c_target_year + c_window_size)) |>
+            mutate(year_diff = abs(year - c_target_year)) |>
+            group_by(REF_AREA) |>
+            slice_min(year_diff, n = 1, with_ties = FALSE) |>
+            ungroup() |>
             select(REF_AREA, REF_AREA_LABEL, INDICATOR_LABEL, 
-                   SEX_LABEL, AGE_LABEL, year_exact = year, value, year_diff) %>%
+                   SEX_LABEL, AGE_LABEL, year_exact = year, value, year_diff) |>
             mutate(year = c_target_year)
         }
         
@@ -337,12 +322,12 @@ pageCarteServer <- function(id, dataset) {
     c_comp_options <- reactive({
       req(input$indicator)
       
-      c_options <- gender %>%
+      c_options <- gender |>
         filter(INDICATOR == input$indicator,
                COMP_BREAKDOWN_1_LABEL != "Not applicable",
-               !is.na(COMP_BREAKDOWN_1_LABEL)) %>%
-        pull(COMP_BREAKDOWN_1_LABEL) %>%
-        unique() %>%
+               !is.na(COMP_BREAKDOWN_1_LABEL)) |>
+        pull(COMP_BREAKDOWN_1_LABEL) |>
+        unique() |>
         sort()
       
       return(c_options)
@@ -352,12 +337,12 @@ pageCarteServer <- function(id, dataset) {
     c_comp_sous_options <- reactive({
       req(input$indicator)
       
-      c_options <- gender %>%
+      c_options <- gender |>
         filter(INDICATOR == input$indicator,
                COMP_BREAKDOWN_2_LABEL != "Not applicable",
-               !is.na(COMP_BREAKDOWN_2_LABEL)) %>%
-        pull(COMP_BREAKDOWN_2_LABEL) %>%
-        unique() %>%
+               !is.na(COMP_BREAKDOWN_2_LABEL)) |>
+        pull(COMP_BREAKDOWN_2_LABEL) |>
+        unique() |>
         sort()
       
       return(c_options)
@@ -369,14 +354,14 @@ pageCarteServer <- function(id, dataset) {
       ns <- session$ns  # Récupérer ns() depuis session
       
       # Récupérer les options disponibles pour cet indicateur
-      c_options <- gender %>%
+      c_options <- gender |>
         filter(
           INDICATOR == input$indicator,
           AGE_LABEL != "All age ranges or no breakdown by age",
           !is.na(AGE_LABEL)
-        ) %>%
-        pull(AGE_LABEL) %>%
-        unique() %>%
+        ) |>
+        pull(AGE_LABEL) |>
+        unique() |>
         sort()
       
       # Afficher le selectInput seulement s'il y a des options
@@ -397,14 +382,14 @@ pageCarteServer <- function(id, dataset) {
       
       ns <- session$ns
       
-      c_options <- gender %>%
+      c_options <- gender |>
         filter(
           INDICATOR == input$indicator,
           COMP_BREAKDOWN_1_LABEL != "Not Applicable",
           !is.na(COMP_BREAKDOWN_1_LABEL)
-        ) %>%
-        pull(COMP_BREAKDOWN_1_LABEL) %>%
-        unique() %>%
+        ) |>
+        pull(COMP_BREAKDOWN_1_LABEL) |>
+        unique() |>
         sort()
       
       if (length(c_options) > 0) {
@@ -425,14 +410,14 @@ pageCarteServer <- function(id, dataset) {
       
       ns <- session$ns
       
-      c_options <- gender %>%
+      c_options <- gender |>
         filter(
           INDICATOR == input$indicator,
           COMP_BREAKDOWN_2_LABEL != "Not Applicable",
           !is.na(COMP_BREAKDOWN_2_LABEL)
-        ) %>%
-        pull(COMP_BREAKDOWN_2_LABEL) %>%
-        unique() %>%
+        ) |>
+        pull(COMP_BREAKDOWN_2_LABEL) |>
+        unique() |>
         sort()
       
       if (length(c_options) > 0) {
@@ -457,15 +442,15 @@ pageCarteServer <- function(id, dataset) {
       req(c_world())
       
       if (input$sex == "RATIO") {
-        c_world() %>%
+        c_world() |>
           left_join(
-            c_data %>% select(REF_AREA, value, year_exact, value_female, value_male),
+            c_data |> select(REF_AREA, value, year_exact, value_female, value_male),
             by = c("iso_a3" = "REF_AREA")
           )
       } else {
-        c_world() %>%
+        c_world() |>
           left_join(
-            c_data %>% select(REF_AREA, value, year_exact),
+            c_data |> select(REF_AREA, value, year_exact),
             by = c("iso_a3" = "REF_AREA")
           )
       }
@@ -487,9 +472,9 @@ pageCarteServer <- function(id, dataset) {
       c_max_val <- max(c_vals, na.rm = TRUE)
       
       # Récupérer le label de l'indicateur
-      c_indicator_label <- gender %>%
-        filter(INDICATOR == c_indicator_code) %>%
-        pull(INDICATOR_LABEL) %>%
+      c_indicator_label <- gender |>
+        filter(INDICATOR == c_indicator_code) |>
+        pull(INDICATOR_LABEL) |>
         first()
       
       #adaptation de la légende si c'est un ratio/ pourcentage ou une valeur
@@ -529,8 +514,8 @@ pageCarteServer <- function(id, dataset) {
       
       # Vérification robuste des données
       if (is.null(c_data)) {
-        return(leaflet() %>%
-                 addProviderTiles(providers$CartoDB.Positron) %>%
+        return(leaflet() |>
+                 addProviderTiles(providers$CartoDB.Positron) |>
                  addControl(
                    html = "<div style='background: white; padding: 10px;'>Aucune donnée disponible</div>",
                    position = "topright"
@@ -538,8 +523,8 @@ pageCarteServer <- function(id, dataset) {
       }
       
       if (all(is.na(c_data$value))) {
-        leaflet(c_data) %>%
-          addProviderTiles(providers$CartoDB.Positron) %>%
+        leaflet(c_data) |>
+          addProviderTiles(providers$CartoDB.Positron) |>
           addPolygons(
             fillColor = "#E0E0E0",
             weight = 1,
@@ -563,29 +548,29 @@ pageCarteServer <- function(id, dataset) {
             ifelse(is.na(c_data$value_female), "", sprintf("%.2f", c_data$value_female)),
             ifelse(is.na(c_data$value_male), "", sprintf("%.2f", c_data$value_male)),
             ifelse(is.na(c_data$year_exact), "", as.character(c_data$year_exact))
-          ) %>% lapply(htmltools::HTML)
+          ) |> lapply(htmltools::HTML)
         } else {
           c_labels <- sprintf(
             "<strong>%s</strong><br/>Valeur: %s<br/>Année: %s",
             c_data$name,
             ifelse(is.na(c_data$value), "Pas de données", sprintf("%.2f", c_data$value)),
             ifelse(is.na(c_data$year_exact), "", as.character(c_data$year_exact))
-          ) %>% lapply(htmltools::HTML)
+          ) |> lapply(htmltools::HTML)
         }
         
         # Créer le titre de la carte
         req(input$indicator, input$year)
         
-        c_indicator_name <- gender %>%
-          filter(INDICATOR == input$indicator) %>%
-          pull(INDICATOR_LABEL) %>%
+        c_indicator_name <- gender |>
+          filter(INDICATOR == input$indicator) |>
+          pull(INDICATOR_LABEL) |>
           first()
         
         if (input$sex == "RATIO") {
           c_sex_part <- "Ratio Female/Male"
         } else {
-          c_sex_label_data <- gender %>%
-            filter(SEX == input$sex) %>%
+          c_sex_label_data <- gender |>
+            filter(SEX == input$sex) |>
             pull(SEX_LABEL)
           
           if (length(c_sex_label_data) > 0) {
@@ -614,9 +599,9 @@ pageCarteServer <- function(id, dataset) {
         
         #Pour afficher la tranche d'age dans le titre (s'il y en a)
         if (!is.null(input$age)) {
-          c_age_label_data <- gender %>%
-            filter(AGE == input$age) %>%
-            pull(AGE_LABEL) %>%
+          c_age_label_data <- gender |>
+            filter(AGE == input$age) |>
+            pull(AGE_LABEL) |>
             first()
           
           if (!is.na(c_age_label_data) && c_age_label_data != "All age ranges or no breakdown by age") {
@@ -650,13 +635,13 @@ pageCarteServer <- function(id, dataset) {
         c_titre_carte_png <- to_snake_case(c_titre_sur_carte)
         
         
-        c_map <- leaflet(c_data, options = leafletOptions(zoomControl = FALSE)) %>%
-          addProviderTiles(providers$CartoDB.Positron) %>%
+        c_map <- leaflet(c_data, options = leafletOptions(zoomControl = FALSE)) |>
+          addProviderTiles(providers$CartoDB.Positron) |>
           addControl(
             html = as.character(c_titre_html),
             position = "topright",
             className = "map-title"
-          ) %>%
+          ) |>
           addPolygons(
             fillColor = ~c_pal(value),
             weight = 1,
@@ -675,11 +660,11 @@ pageCarteServer <- function(id, dataset) {
               textsize = "13px",
               direction = "auto"
             )
-          ) %>%
+          ) |>
           addControl(
             html = c_create_legend_html(c_pal, c_data$value, input$sex, input$indicator),
             position = "bottomright"
-          ) %>%
+          ) |>
           addEasyprint(options = easyprintOptions(
             title = 'Télécharger la carte',
             position = 'bottomleft',

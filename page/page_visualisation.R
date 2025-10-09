@@ -9,14 +9,14 @@ pageVisualisationUI <- function(id) {
   fluidPage(
     br(),
     fluidRow(
-      column(3, selectInput(ns("country"), "Pays",
+      column(3, selectInput(ns("country"), "Country",
                             choices = NULL,
-                            selected = "Estonia")),
-      column(3, selectInput(ns("indicator"), "Indicateur",
+                            selected = "Brazil")),
+      column(3, selectInput(ns("indicator"), "Indicator",
                             choices = NULL,
                             selected = "Literacy rate (%)")),
-      column(3, selectInput(ns("age"), "Âge", choices = NULL)),
-      column(3, selectInput(ns("sex"), "Sexe",
+      column(3, selectInput(ns("age"), "Age", choices = NULL)),
+      column(3, selectInput(ns("sex"), "Sex",
                             choices = c("Female", "Male", "Total"),
                             multiple = TRUE,
                             selected = c("Female", "Male", "Total")))
@@ -31,7 +31,7 @@ pageVisualisationUI <- function(id) {
     hr(),
     
     fluidRow(
-      column(3, selectInput(ns("year_bar"), "Année pour le graphique en barres", choices = NULL))
+      column(3, selectInput(ns("year_bar"), "Select a year", choices = NULL))
     ),
     fluidRow(column(12, plotOutput(ns("graph_bar"))))
   )
@@ -46,7 +46,7 @@ pageVisualisationServer <- function(id, dataset) {
     observe({
       updateSelectInput(session, "country",
                         choices = sort(unique(dataset$REF_AREA_LABEL)),
-                        selected = "Estonia")
+                        selected = "Brazil")
     })
     
     observeEvent(input$country, {
@@ -124,7 +124,7 @@ pageVisualisationServer <- function(id, dataset) {
       
       unit_label <- unique(df$UNIT_MEASURE_LABEL)
       y_label <- ifelse(any(grepl("Percentage|Ratio", unit_label, ignore.case = TRUE)),
-                        "Valeur (%)", "Valeur")
+                        "Value (%)", "Value")
       
       subtitle_text <- paste(
         "Pays :", input$country,
@@ -141,7 +141,7 @@ pageVisualisationServer <- function(id, dataset) {
         scale_color_manual(values = colors) +
         labs(title = input$indicator,
              subtitle = subtitle_text,
-             x = "Année", y = y_label, color = "Sexe") +
+             x = "Year", y = y_label, color = "Sex") +
         theme_minimal(base_size = 13)
     })
     
@@ -201,7 +201,7 @@ pageVisualisationServer <- function(id, dataset) {
         input$country, "-", input$year_bar,
         "\nÂge :", input$age,
         if (!is.null(input$comp_breakdown)) paste("\nBreakdown :", input$comp_breakdown) else "",
-        if (!is.null(input$comp_sous_breakdown)) paste("\nSous-breakdown :", input$comp_sous_breakdown) else ""
+        if (!is.null(input$comp_sous_breakdown)) paste("\n 2nd breakdown :", input$comp_sous_breakdown) else ""
       )
       
       n_cat <- length(unique(df$SEX_LABEL))
@@ -214,7 +214,7 @@ pageVisualisationServer <- function(id, dataset) {
         coord_cartesian(ylim = c(ylim_inf, ylim_sup)) +
         labs(title = input$indicator,
              subtitle = subtitle_text,
-             x = "Sexe", y = "Valeur (%)", fill = "Sexe") +
+             x = "Sex", y = "Value (%)", fill = "Sex") +
         theme_minimal(base_size = 14)
     })
   })

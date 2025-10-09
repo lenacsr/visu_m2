@@ -6,7 +6,7 @@ pageAccueilUI <- function(id, dataset) {
   
   fluidPage(
     titlePanel(
-      h1("A worldwide analysis tool of gender inequalities", style = "justify-content: center")
+      title = "A worldwide analysis tool of gender inequalities"
          ),
     
     tabsetPanel(
@@ -28,22 +28,23 @@ pageAccueilUI <- function(id, dataset) {
                br(),
                tags$a(href="https://data360.worldbank.org/en/search?database=WB_GS&tab=indicator&themeAndTopics=P2_000002", "Gender Statistics | DataBank"),
                DTOutput(ns("table_data"))
-      ),
-      tabPanel("Color Palette",
-               br(),
-               div(
-                 style = "text-align: center; max-width: 600px; margin: auto;",
-                 
-                 h3("Choose a color palette"),
-                 
-                 radioButtons(ns("palette_choice"), 
-                              label = "Select your preferred color palette:",
-                              choices = c("Default" = "default",
-                                          "Colorblind-friendly" = "daltonian"),
-                              selected = "default",
-                              inline = TRUE)
-               )
       )
+      # ,
+      # tabPanel("Color Palette",
+      #          br(),
+      #          div(
+      #            style = "text-align: center; max-width: 600px; margin: auto;",
+      #            
+      #            h3("Choose a color palette"),
+      #            
+      #            radioButtons(ns("palette_choice"), 
+      #                         label = "Select your preferred color palette:",
+      #                         choices = c("Default" = "default",
+      #                                     "Colorblind-friendly" = "daltonian"),
+      #                         selected = "default",
+      #                         inline = TRUE)
+      #          )
+      # )
     )
   )
 }
@@ -63,14 +64,14 @@ pageAccueilServer <- function(id, dataset) {
       )
     })
     
-    # palette
-    observe({
-      if(input$palette_choice == "default") {
-        palette_choice(palette_6)
-      } else {
-        palette_choice(palette_daltonian)
-      }
-    })
+    # # palette
+    # observe({
+    #   if(input$palette_choice == "default") {
+    #     palette_choice(palette_6)
+    #   } else {
+    #     palette_choice(palette_daltonian)
+    #   }
+    # })
     
   })
 }

@@ -22,21 +22,21 @@ pageUI_stat_desc <- function(id) {
       type = "tabs",
       
       # --- Onglet 1 : Aperçu des données ---
-      tabPanel("Aperçu des données",
+      tabPanel("Glimpse at the data",
                fluidRow(column(12, tags$hr())),
                
                # Statistiques globales
                fluidRow(
-                 column(3, wellPanel(h4("Nombre total d'observations"),
+                 column(3, wellPanel(h4("Number of observations"),
                                      textOutput(ns("total_obs")),
                                      style="background-color:#f9fafb; text-align:center; border-left:5px solid #3498db;")),
-                 column(3, wellPanel(h4("Nombre de pays"),
+                 column(3, wellPanel(h4("Number of available countries"),
                                      textOutput(ns("nb_pays")),
                                      style="background-color:#f9fafb; text-align:center; border-left:5px solid #2ecc71;")),
-                 column(3, wellPanel(h4("Nombre d'indicateurs"),
+                 column(3, wellPanel(h4("Nombre of indicators"),
                                      textOutput(ns("nb_indicateurs")),
                                      style="background-color:#f9fafb; text-align:center; border-left:5px solid #f1c40f;")),
-                 column(3, wellPanel(h4("Nombre d'années"),
+                 column(3, wellPanel(h4("Nombre years"),
                                      textOutput(ns("nb_annees")),
                                      style="background-color:#f9fafb; text-align:center; border-left:5px solid #e67e22;"))
                ),
@@ -44,20 +44,20 @@ pageUI_stat_desc <- function(id) {
                br(),
                # Distribution par sexe et âge
                fluidRow(
-                 column(6, h4("Par sexe"), plotOutput(ns("sex_distribution_plot"), height="300px")),
-                 column(6, h4("Par âge"), plotOutput(ns("age_distribution_plot"), height="300px"))
+                 column(6, h4("By sex"), plotOutput(ns("sex_distribution_plot"), height="300px")),
+                 column(6, h4("By age"), plotOutput(ns("age_distribution_plot"), height="300px"))
                ),
                
                br(),
                # Distribution par unité
                fluidRow(
-                 column(12, h4("Par unité de mesure"), plotOutput(ns("unit_distribution_plot"), height="300px"))
+                 column(12, h4("By unit of measurement"), plotOutput(ns("unit_distribution_plot"), height="300px"))
                ),
                
                br(),
                # Par pays (top/bottom 15)
                fluidRow(
-                 column(12, h4("Par pays"))
+                 column(12, h4("By countries"))
                ),
                fluidRow(
                  column(6, plotOutput(ns("top_countries_plot"), height = "400px")),
@@ -66,15 +66,15 @@ pageUI_stat_desc <- function(id) {
       ),
       
       # --- Onglet 2 : Aperçu des NA ---
-      tabPanel("Aperçu des NA",
+      tabPanel("NA glimpse",
                fluidRow(
                  column(
                    12,
                    textOutput(ns("na_value_pct")),
                    br(),
-                   checkboxInput(ns("all_countries"), "Tous les pays", value = TRUE),
+                   checkboxInput(ns("all_countries"), "All countries", value = TRUE),
                    uiOutput(ns("select_countries_ui")),
-                   selectInput(ns("select_indicators"), "Sélectionnez les indicateurs",
+                   selectInput(ns("select_indicators"), "Select an indicator",
                                choices = NULL, multiple = TRUE),
                    br(),
                    plotOutput(ns("na_plot"), height = "700px")
@@ -97,9 +97,9 @@ pageServer_stat_desc <- function(id, dataset) {
     
     # --- Graphique par sexe ---
     output$sex_distribution_plot <- renderPlot({
-      df <- dataset %>%
-        group_by(SEX_LABEL) %>%
-        summarise(Nombre = n()) %>%
+      df <- dataset |>
+        group_by(SEX_LABEL) |>
+        summarise(Nombre = n()) |>
         arrange(desc(Nombre))
       
       n_cat <- nrow(df)
@@ -111,15 +111,15 @@ pageServer_stat_desc <- function(id, dataset) {
         scale_fill_manual(values = fill_colors) +
         theme_minimal(base_size = 13) +
         theme(legend.position = "none") +
-        labs(x = NULL, y = "Nombre d'observations")
+        labs(x = NULL, y = "Number of observations")
     })
     
     # --- Graphique par âge ---
     output$age_distribution_plot <- renderPlot({
-      df <- dataset %>%
-        group_by(AGE_LABEL) %>%
-        summarise(Nombre = n()) %>%
-        arrange(desc(Nombre)) %>%
+      df <- dataset |>
+        group_by(AGE_LABEL) |>
+        summarise(Nombre = n()) |>
+        arrange(desc(Nombre)) |>
         head(15)
       
       palette_continue <- colorRampPalette(palette_6)
@@ -130,14 +130,14 @@ pageServer_stat_desc <- function(id, dataset) {
         scale_fill_gradientn(colours = palette_continue(100)) +
         theme_minimal(base_size = 12) +
         theme(legend.position = "none") +
-        labs(x = NULL, y = "Nombre d'observations")
+        labs(x = NULL, y = "Number of observations")
     })
     
     # --- Graphique par unité ---
     output$unit_distribution_plot <- renderPlot({
-      df <- dataset %>%
-        group_by(UNIT_MEASURE_LABEL) %>%
-        summarise(Nombre = n()) %>%
+      df <- dataset |>
+        group_by(UNIT_MEASURE_LABEL) |>
+        summarise(Nombre = n()) |>
         arrange(desc(Nombre))
       
       n_cat <- nrow(df)
@@ -152,16 +152,16 @@ pageServer_stat_desc <- function(id, dataset) {
           legend.position = "none",
           axis.text.x = element_text(angle = 0, hjust = 0.5)
         ) +
-        labs(x = NULL, y = "Nombre d'observations")
+        labs(x = NULL, y = "Number of observations")
     })
     
     # --- Graphique Top 15 pays ---
     output$top_countries_plot <- renderPlot({
-      df <- dataset %>%
-        filter(!is.na(value)) %>%
-        group_by(REF_AREA_LABEL) %>%
-        summarise(Nombre = n(), .groups = 'drop') %>%
-        arrange(desc(Nombre)) %>%
+      df <- dataset |>
+        filter(!is.na(value)) |>
+        group_by(REF_AREA_LABEL) |>
+        summarise(Nombre = n(), .groups = 'drop') |>
+        arrange(desc(Nombre)) |>
         head(15)
       
       palette_continue <- colorRampPalette(palette_6)
@@ -174,17 +174,17 @@ pageServer_stat_desc <- function(id, dataset) {
         scale_fill_gradientn(colours = palette_continue(100)) +
         theme_minimal(base_size = 12) +
         theme(legend.position = "none", axis.text.y = element_text(size = 11)) +
-        labs(x = NULL, y = "Nombre de valeurs non manquantes",
-             title = "Top 15 pays avec le plus de valeurs")
+        labs(x = NULL, y = "Number of values",
+             title = "Top 15 countries with most available values")
     })
     
     # --- Graphique Bottom 15 pays ---
     output$bottom_countries_plot <- renderPlot({
-      df <- dataset %>%
-        filter(!is.na(value)) %>%
-        group_by(REF_AREA_LABEL) %>%
-        summarise(Nombre = n(), .groups = 'drop') %>%
-        arrange(Nombre) %>%
+      df <- dataset |>
+        filter(!is.na(value)) |>
+        group_by(REF_AREA_LABEL) |>
+        summarise(Nombre = n(), .groups = 'drop') |>
+        arrange(Nombre) |>
         head(15)
       
       palette_continue <- colorRampPalette(palette_6)
@@ -197,8 +197,8 @@ pageServer_stat_desc <- function(id, dataset) {
         scale_fill_gradientn(colours = palette_continue(100)) +
         theme_minimal(base_size = 12) +
         theme(legend.position = "none", axis.text.y = element_text(size = 11)) +
-        labs(x = NULL, y = "Nombre de valeurs non manquantes",
-             title = "Top 15 pays avec le moins de valeurs")
+        labs(x = NULL, y = "Number of values",
+             title = "Top 15 countries with least available values")
     })
     
     # --- Onglet 2 : NA ---
@@ -210,7 +210,7 @@ pageServer_stat_desc <- function(id, dataset) {
     
     output$select_countries_ui <- renderUI({
       if (!input$all_countries) {
-        selectInput(session$ns("select_countries"), "Sélectionnez les pays",
+        selectInput(session$ns("select_countries"), "Select countries",
                     choices = sort(unique(dataset$REF_AREA_LABEL)),
                     selected = unique(dataset$REF_AREA_LABEL)[1:3],
                     multiple = TRUE)
@@ -219,21 +219,21 @@ pageServer_stat_desc <- function(id, dataset) {
     
     output$na_value_pct <- renderText({
       pct_na <- mean(is.na(dataset$value)) * 100
-      paste0("Au total, la part de valeurs manquantes est de : ",
+      paste0("Part of missing values is : ",
              round(pct_na, 2), " %")
     })
     
     output$na_plot <- renderPlot({
-      df_filtered <- dataset %>%
+      df_filtered <- dataset |>
         filter(INDICATOR_LABEL %in% input$select_indicators)
       
       if (!input$all_countries && !is.null(input$select_countries)) {
-        df_filtered <- df_filtered %>%
+        df_filtered <- df_filtered |>
           filter(REF_AREA_LABEL %in% input$select_countries)
       }
       
-      df_wide <- df_filtered %>%
-        summarise(value = mean(value, na.rm = TRUE), .by = c(REF_AREA_LABEL, INDICATOR_LABEL)) %>% 
+      df_wide <- df_filtered |>
+        summarise(value = mean(value, na.rm = TRUE), .by = c(REF_AREA_LABEL, INDICATOR_LABEL)) |> 
         tidyr::pivot_wider(names_from = INDICATOR_LABEL, values_from = value, names_sep = "_")
       
       par(mar = c(10, 10, 10, 10))
@@ -243,7 +243,7 @@ pageServer_stat_desc <- function(id, dataset) {
                 sortVars = TRUE,
                 labels = names(df_wide),
                 gap = 3,
-                ylab = c("Proportion of missing", "Combinaisons"),
+                ylab = c("Proportion of missing", "Combinations"),
                 cex.axis = 0.6,
                 cex.numbers = 0.7,
                 right = TRUE,
