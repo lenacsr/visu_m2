@@ -14,7 +14,7 @@ fluidPage(
   ),
   
   shinyjs::useShinyjs(),
-    
+  
   tags$head(
     tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"),
     tags$style(HTML("
@@ -23,11 +23,11 @@ fluidPage(
         padding: 0;
         box-sizing: border-box;
       }
-      
+
       body {
         background: #f5f5f5;
       }
-      
+
       /* Page d'accueil */
       #home_page {
         min-height: 100vh;
@@ -38,26 +38,26 @@ fluidPage(
         margin: -20px;
         padding: 20px;
       }
-      
+
       .home-content {
         text-align: center;
         color: white;
         animation: fadeInUp 1s ease-out;
       }
-      
+
       .home-content h1 {
         font-size: 4rem;
         font-weight: 700;
         margin-bottom: 1rem;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
       }
-      
+
       .home-content p {
         font-size: 1.5rem;
         margin-bottom: 3rem;
         opacity: 0.95;
       }
-      
+
       #enter_app {
         background: white;
         color: #CB3452;
@@ -70,24 +70,24 @@ fluidPage(
         transition: all 0.3s ease;
         cursor: pointer;
       }
-      
+
       #enter_app:hover {
         background: #FFE100;
         color: #CB3452;
         transform: translateY(-3px);
         box-shadow: 0 12px 24px rgba(0,0,0,0.3);
       }
-      
+
       @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(30px); }
         to { opacity: 1; transform: translateY(0); }
       }
-      
+
       /* Cacher l'app au démarrage */
       #main_app {
         display: none;
       }
-      
+
       /* Header */
       .custom-header {
         background: linear-gradient(135deg, #CB3452 0%, #D96C81 50%, #F58442 100%);
@@ -99,13 +99,13 @@ fluidPage(
         position: relative;
         z-index: 100;
       }
-      
+
       .header-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
-      
+
       /* Pill Navigation Container */
       .pill-nav-container {
         position: absolute;
@@ -114,7 +114,7 @@ fluidPage(
         transform: translateX(-50%);
         z-index: 99;
       }
-      
+
       .pill-nav {
         --nav-h: 70px;
         --pill-pad-x: 20px;
@@ -124,15 +124,14 @@ fluidPage(
         --hover-bg: white;
         --pill-text: white;
         --hover-text: #CB3452;
-        
-        width: 950px;
+        width: 950x;
         display: flex;
         align-items: center;
         opacity: 1;
         transform: translateY(0);
         transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
-      
+
       .pill-nav-items {
         max-width: auto;
         position: relative;
@@ -143,7 +142,7 @@ fluidPage(
         border-radius: 9999px;
         box-shadow: 0 6px 20px rgba(203, 52, 82, 0.4);
       }
-      
+
       .pill-list {
         list-style: none;
         display: flex;
@@ -151,22 +150,22 @@ fluidPage(
         gap: var(--pill-gap);
         margin: 0;
         padding: 4px;
-        height: auto; 
+        height: auto;
         flex-wrap: wrap;
         justify-content: center;
       }
-      
+
       .pill-list > li {
         display: flex;
         height: 100%;
       }
-      
+
       .pill {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         height: calc(var(--nav-h) - 40px);
-        font-size: 15px;   
+        font-size: 15px;
         padding: 0 var(--pill-pad-x);
         background: linear-gradient(135deg, #D96C81 0%, #F58442 100%);
         color: white;
@@ -184,7 +183,7 @@ fluidPage(
         overflow: hidden;
         transition: all 0.3s ease;
       }
-      
+
       /* Circle hover effect */
       .pill .hover-circle {
         position: absolute;
@@ -199,7 +198,7 @@ fluidPage(
         transform: translateX(-50%) scale(0);
         transform-origin: 50% 100%;
       }
-      
+
       /* Label stack for text animation */
       .pill .label-stack {
         position: relative;
@@ -207,7 +206,7 @@ fluidPage(
         line-height: 1;
         z-index: 2;
       }
-      
+
       .pill .pill-label {
         position: relative;
         z-index: 2;
@@ -216,7 +215,7 @@ fluidPage(
         will-change: transform;
         transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
-      
+
       .pill .pill-label-hover {
         position: absolute;
         left: 0;
@@ -229,7 +228,7 @@ fluidPage(
         transform: translateY(30px);
         transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
-      
+
       /* Active indicator */
       .pill.is-active::after {
         content: '';
@@ -244,7 +243,7 @@ fluidPage(
         z-index: 4;
         box-shadow: 0 2px 8px rgba(255,255,255,0.6);
       }
-      
+
       /* Contenu principal */
       .main-content {
         margin-top: 4rem;
@@ -255,7 +254,7 @@ fluidPage(
         min-height: 60vh;
         position: relative;
       }
-      
+
       /* Page content - utiliser visibility au lieu de display pour Leaflet */
       .page-content {
         visibility: hidden;
@@ -267,19 +266,19 @@ fluidPage(
         pointer-events: none;
         animation: fadeIn 0.5s;
       }
-      
+
       .page-content.active {
         visibility: visible;
         opacity: 1;
         position: relative;
         pointer-events: auto;
       }
-      
+
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
-      
+
       /* Footer */
       footer {
         margin-top: 3rem;
@@ -323,11 +322,7 @@ fluidPage(
       class = "custom-header",
       tags$div(
         class = "header-content",
-        tags$div(
-          tags$h1(style = "margin: 0; font-weight: 600;", "Mon Application"),
-          tags$p(style = "margin: 0.5rem 0 0 0; opacity: 0.9;", 
-                 "Analyse et visualisation des données")
-        ),
+        tags$div(tags$h1(style = "margin: 0; font-weight: 600;", "Gender inequalities exploration tool")),
         actionButton(
           "back_home",
           "Back to home Menu",
@@ -349,12 +344,13 @@ fluidPage(
               class = "pill-list",
               role = "menubar",
               
+              # Homepage (page0)
               tags$li(
                 role = "none",
                 tags$a(
                   role = "menuitem",
                   href = "#",
-                  class = "pill pill-item",
+                  class = "pill is-active pill-item",
                   `data-page` = "page0",
                   tags$span(class = "hover-circle"),
                   tags$span(
@@ -365,54 +361,24 @@ fluidPage(
                 )
               ),
               
+              # Indicator Map (page1) -> contient les deux sous-onglets
               tags$li(
                 role = "none",
                 tags$a(
                   role = "menuitem",
                   href = "#",
-                  class = "pill is-active pill-item",
+                  class = "pill pill-item",
                   `data-page` = "page1",
                   tags$span(class = "hover-circle"),
                   tags$span(
                     class = "label-stack",
-                    tags$span(class = "pill-label", "Gendered indicator map"),
-                    tags$span(class = "pill-label-hover", "Gendered indicator map")
+                    tags$span(class = "pill-label", "Indicator Map"),
+                    tags$span(class = "pill-label-hover", "Indicator Map")
                   )
                 )
               ),
               
-              tags$li(
-                role = "none",
-                tags$a(
-                  role = "menuitem",
-                  href = "#",
-                  class = "pill pill-item",
-                  `data-page` = "page2",
-                  tags$span(class = "hover-circle"),
-                  tags$span(
-                    class = "label-stack",
-                    tags$span(class = "pill-label", "Indicator threshold map"),
-                    tags$span(class = "pill-label-hover", "Indicator threshold map")
-                  )
-                )
-              ),
-              
-              tags$li(
-                role = "none",
-                tags$a(
-                  role = "menuitem",
-                  href = "#",
-                  class = "pill pill-item",
-                  `data-page` = "page3",
-                  tags$span(class = "hover-circle"),
-                  tags$span(
-                    class = "label-stack",
-                    tags$span(class = "pill-label", "Axis based comparison"),
-                    tags$span(class = "pill-label-hover", "Axis based comparison")
-                  )
-                )
-              ),
-              
+              # Country Report (page4) -> contiendra Summary + Visualization
               tags$li(
                 role = "none",
                 tags$a(
@@ -429,22 +395,24 @@ fluidPage(
                 )
               ),
               
+              # Temporal Indicator Comparison (page8)
               tags$li(
                 role = "none",
                 tags$a(
                   role = "menuitem",
                   href = "#",
                   class = "pill pill-item",
-                  `data-page` = "page5",
+                  `data-page` = "page8",
                   tags$span(class = "hover-circle"),
                   tags$span(
                     class = "label-stack",
-                    tags$span(class = "pill-label", "Country Visualization Report"),
-                    tags$span(class = "pill-label-hover", "Country Visualization Report")
+                    tags$span(class = "pill-label", "Temporal Indicator Comparison"),
+                    tags$span(class = "pill-label-hover", "Temporal Indicator Comparison")
                   )
                 )
               ),
               
+              # PCA (page6)
               tags$li(
                 role = "none",
                 tags$a(
@@ -461,6 +429,7 @@ fluidPage(
                 )
               ),
               
+              # Descriptive Stats (page7)
               tags$li(
                 role = "none",
                 tags$a(
@@ -475,22 +444,6 @@ fluidPage(
                     tags$span(class = "pill-label-hover", "Descriptive Stats")
                   )
                 )
-              ),
-              
-              tags$li(
-                role = "none",
-                tags$a(
-                  role = "menuitem",
-                  href = "#",
-                  class = "pill pill-item",
-                  `data-page` = "page8",
-                  tags$span(class = "hover-circle"),
-                  tags$span(
-                    class = "label-stack",
-                    tags$span(class = "pill-label", "Temporal indicator comparison"),
-                    tags$span(class = "pill-label-hover", "Temporal indicator comparison")
-                  )
-                )
               )
             )
           )
@@ -498,73 +451,61 @@ fluidPage(
       )
     ),
     
-    # Contenu principal
+    # Contenu principal (les ids correspondent aux data-page : content_page1, content_page4, ...)
     tags$div(
       class = "main-content",
       
+      # Homepage (page0) - non active par défaut (on garde page1 active comme dans le code de base)
       tags$div(
         class = "page-content active",
         id = "content_page0",
-        tags$div(style = "margin-top: 1rem;",
-                 pageAccueilUI("home")
-        )
+        tags$div(style = "margin-top: 1rem;", pageAccueilUI("home", gender))
       ),
+      
+      # Indicator Map (page1) -> contient 2 sous-onglets : Gendered + Threshold
       tags$div(
         class = "page-content",
         id = "content_page1",
         tags$div(style = "margin-top: 1rem;",
-                 PageCarteUI("carte")
+                 tabsetPanel(
+                   tabPanel("Gendered indicator map", PageCarteUI("carte")),
+                   tabPanel("Indicator threshold map", PageCarteThresholdUI("carte_threshold"))
+                 )
         )
       ),
+      
+      # Country Report (page4) -> contient Summary Report + Visualization Report
       tags$div(
         class = "page-content",
-        id = "content_page2",
+        id = "content_page4",
         tags$div(style = "margin-top: 1rem;",
-                 PageCarteThresholdUI("carte_threshold")
+                 tabsetPanel(
+                   tabPanel("Summary Report", pageRecapPaysUI("recap")),
+                   tabPanel("Visualization Report", pageVisualisationUI("visu"))
+                 )
         )
       ),
+      
+      # Temporal Indicator Comparison (page8)
       tags$div(
-        class = "page-content", 
-        id = "content_page3", 
-        tags$div(style = "margin-top: 1rem;",
-                 pageComparaisonUI("comp")
-        )
+        class = "page-content",
+        id = "content_page8",
+        tags$div(style = "margin-top: 1rem;", pageTempComparaisonUI("temp_comp"))
       ),
+      
+      # PCA (page6)
       tags$div(
-        class = "page-content", 
-        id = "content_page4", 
-        tags$div(style = "margin-top: 1rem;",
-                 pageRecapPaysUI("recap")
-        )
+        class = "page-content",
+        id = "content_page6",
+        tags$div(style = "margin-top: 1rem;", pageACPUI("acp"))
       ),
+      
+      # Descriptive Stats (page7)
       tags$div(
-        class = "page-content", 
-        id = "content_page5", 
-        tags$div(style = "margin-top: 1rem;",
-                 pageVisualisationUI("visu")
-        )
-      ),
-      tags$div(
-        class = "page-content", 
-        id = "content_page6", 
-        tags$div(style = "margin-top: 1rem;",
-                 pageACPUI("acp")
-        )
-      ),
-      tags$div(
-        class = "page-content", 
-        id = "content_page7", 
-        tags$div(style = "margin-top: 1rem;",
-                 pageUI_stat_desc("statdesc")
-        )
-      ),
-      tags$div(
-        class = "page-content", 
-        id = "content_page8", 
-        tags$div(style = "margin-top: 1rem;",
-                 pageTempComparaisonUI("temp_comp")
-        )
-      ),
+        class = "page-content",
+        id = "content_page7",
+        tags$div(style = "margin-top: 1rem;", pageUI_stat_desc("statdesc"))
+      )
     ),
     
     # Footer
@@ -576,7 +517,7 @@ fluidPage(
     )
   ),
   
-  # JavaScript avec GSAP
+  # JavaScript avec GSAP (inchangé structurellement pour rester fidèle au code de base)
   tags$script(HTML("
     // Attendre que GSAP soit chargé
     function initPillNav() {
@@ -584,53 +525,53 @@ fluidPage(
         setTimeout(initPillNav, 100);
         return;
       }
-      
+
       const pills = document.querySelectorAll('.pill-item');
       const circles = document.querySelectorAll('.hover-circle');
       const timelines = [];
-      
+
       // Fonction pour calculer les dimensions du cercle
       function layoutCircles() {
         pills.forEach((pill, i) => {
           const circle = circles[i];
           if (!circle) return;
-          
+
           const rect = pill.getBoundingClientRect();
           const w = rect.width;
           const h = rect.height;
-          
+
           // Calcul du rayon pour créer l'effet de vague
           const R = ((w * w) / 4 + h * h) / (2 * h);
           const D = Math.ceil(2 * R) + 2;
           const delta = Math.ceil(R - Math.sqrt(Math.max(0, R * R - (w * w) / 4))) + 1;
           const originY = D - delta;
-          
+
           circle.style.width = D + 'px';
           circle.style.height = D + 'px';
           circle.style.bottom = -delta + 'px';
-          
+
           gsap.set(circle, {
             xPercent: -50,
             scale: 0,
             transformOrigin: '50% ' + originY + 'px'
           });
-          
+
           const label = pill.querySelector('.pill-label');
           const hoverLabel = pill.querySelector('.pill-label-hover');
-          
+
           if (label) gsap.set(label, { y: 0 });
           if (hoverLabel) gsap.set(hoverLabel, { y: h + 12, opacity: 0 });
-          
+
           // Créer la timeline d'animation
           const tl = gsap.timeline({ paused: true });
-          
+
           tl.to(circle, { 
             scale: 1.2, 
             xPercent: -50, 
             duration: 0.6, 
             ease: 'power3.out' 
           }, 0);
-          
+
           if (label) {
             tl.to(label, { 
               y: -(h + 8), 
@@ -638,7 +579,7 @@ fluidPage(
               ease: 'power3.out' 
             }, 0);
           }
-          
+
           if (hoverLabel) {
             tl.to(hoverLabel, { 
               y: 0, 
@@ -647,14 +588,14 @@ fluidPage(
               ease: 'power3.out' 
             }, 0);
           }
-          
+
           timelines[i] = tl;
         });
       }
-      
+
       layoutCircles();
       window.addEventListener('resize', layoutCircles);
-      
+
       // Gestion des événements hover et click
       pills.forEach((pill, i) => {
         pill.addEventListener('mouseenter', () => {
@@ -662,40 +603,40 @@ fluidPage(
             timelines[i].play();
           }
         });
-        
+
         pill.addEventListener('mouseleave', () => {
           if (timelines[i]) {
             timelines[i].reverse();
           }
         });
-        
+
         pill.addEventListener('click', (e) => {
           e.preventDefault();
-          
+
           // Retirer la classe active de tous
           pills.forEach(p => p.classList.remove('is-active'));
-          
+
           // Ajouter la classe active au pill cliqué
           pill.classList.add('is-active');
-          
+
           // Changer le contenu
           const page = pill.getAttribute('data-page');
           const targetContent = document.getElementById('content_' + page);
-          
+
           document.querySelectorAll('.page-content').forEach(content => {
             content.classList.remove('active');
           });
-          
+
           targetContent.classList.add('active');
-          
+
           // Forcer le redimensionnement des cartes Leaflet - PLUSIEURS tentatives
           setTimeout(function() {
             // Event resize général
             window.dispatchEvent(new Event('resize'));
-            
+
             // Chercher toutes les cartes Leaflet dans la page active
             const maps = targetContent.querySelectorAll('.leaflet-container');
-            
+
             maps.forEach(function(container) {
               // Méthode 1: Via l'API Leaflet directe
               if (container._leaflet_id && L.Map && L.map) {
@@ -704,7 +645,7 @@ fluidPage(
                   map.invalidateSize(true);
                 }
               }
-              
+
               // Méthode 2: Via HTMLWidgets
               if (container.id && window.HTMLWidgets) {
                 const widget = window.HTMLWidgets.find('#' + container.id);
@@ -717,11 +658,11 @@ fluidPage(
               }
             });
           }, 50);
-          
+
           // Deuxième tentative après animation
           setTimeout(function() {
             window.dispatchEvent(new Event('resize'));
-            
+
             const maps = targetContent.querySelectorAll('.leaflet-container');
             maps.forEach(function(container) {
               if (container._leaflet_id) {
@@ -732,7 +673,7 @@ fluidPage(
               }
             });
           }, 300);
-          
+
           // Envoyer à Shiny
           if (typeof Shiny !== 'undefined') {
             Shiny.setInputValue('nav_page', page, {priority: 'event'});
@@ -740,13 +681,13 @@ fluidPage(
         });
       });
     }
-    
+
     // Message personnalisé de Shiny pour forcer le resize
     if (typeof Shiny !== 'undefined') {
       Shiny.addCustomMessageHandler('triggerResize', function(message) {
         setTimeout(function() {
           window.dispatchEvent(new Event('resize'));
-          
+
           if (typeof L !== 'undefined' && L.Map) {
             document.querySelectorAll('.leaflet-container').forEach(function(mapElement) {
               const mapId = mapElement.id;
@@ -761,7 +702,7 @@ fluidPage(
         }, 100);
       });
     }
-    
+
     // Initialiser
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initPillNav);

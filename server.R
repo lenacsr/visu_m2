@@ -17,6 +17,7 @@ function(input, output, session) {
   ##################
   # NOS PAGFES
   ##################
+  pageAccueilServer("home", dataset = gender)
   pageComparaisonServer("comp", dataset = gender)
   pageRecapPaysServer("recap", dataset = gender)
   pageACPServer("acp", dataset = gender)
