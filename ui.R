@@ -165,7 +165,7 @@ fluidPage(
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        height: calc(var(--nav-h) - 40px);  /* ajuste pour compenser le padding */
+        height: calc(var(--nav-h) - 40px);
         font-size: 15px;   
         padding: 0 var(--pill-pad-x);
         background: linear-gradient(135deg, #D96C81 0%, #F58442 100%);
@@ -295,8 +295,9 @@ fluidPage(
     id = "home_page",
     div(
       class = "home-content",
-      tags$h1("Les inégalités de genre dans le monde"),
-      tags$p("Analyse et visualisation de données avancées"),
+      tags$h1("A worldwide analysis tool of"),
+      tags$h1("gender inequalities"),
+      tags$p("A R shiny app to explore the different aspects of gender inequalities in the world"),
       tags$div(
         style = "display: flex; gap: 1rem; justify-content: center; align-items: center; margin-bottom: 2rem;",
         tags$div(style = "width: 40px; height: 4px; background: #FFE100; border-radius: 2px;"),
@@ -306,7 +307,7 @@ fluidPage(
       ),
       actionButton(
         "enter_app",
-        "Entrer dans l'application",
+        "Start exploring",
         icon = icon("arrow-right"),
         class = "btn-lg"
       )
@@ -329,7 +330,7 @@ fluidPage(
         ),
         actionButton(
           "back_home",
-          "Retour Accueil",
+          "Back to home Menu",
           icon = icon("home"),
           style = "background: rgba(255,255,255,0.2); border: 2px solid white; 
                    color: white; border-radius: 8px; padding: 0.5rem 1.5rem;
@@ -347,6 +348,22 @@ fluidPage(
             tags$ul(
               class = "pill-list",
               role = "menubar",
+              
+              tags$li(
+                role = "none",
+                tags$a(
+                  role = "menuitem",
+                  href = "#",
+                  class = "pill pill-item",
+                  `data-page` = "page0",
+                  tags$span(class = "hover-circle"),
+                  tags$span(
+                    class = "label-stack",
+                    tags$span(class = "pill-label", "Homepage"),
+                    tags$span(class = "pill-label-hover", "Homepage")
+                  )
+                )
+              ),
               
               tags$li(
                 role = "none",
@@ -487,6 +504,13 @@ fluidPage(
       
       tags$div(
         class = "page-content active",
+        id = "content_page0",
+        tags$div(style = "margin-top: 1rem;",
+                 pageAccueilUI("home")
+        )
+      ),
+      tags$div(
+        class = "page-content",
         id = "content_page1",
         tags$div(style = "margin-top: 1rem;",
                  PageCarteUI("carte")
