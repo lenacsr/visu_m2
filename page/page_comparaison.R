@@ -1,6 +1,6 @@
 # === pages/page_comparaison.R ===
 
-# --- UI du module ---
+# --- UI du module ---  
 pageTempComparaisonUI <- function(id) {
   ns <- NS(id)
   
@@ -11,41 +11,52 @@ pageTempComparaisonUI <- function(id) {
              selectInput(ns("country_compare"), "Pays (sélection multiple)",
                          choices = NULL,
                          multiple = TRUE,
-                         selected = c("Estonia", "Finland"))),
+                         selected = c("Estonia", "Brazil"))),
       column(width = 3,
-             selectInput(ns("indicator_compare"), "Indicateur", choices = NULL)),
+             selectInput(ns("indicator_compare"), 
+                         "Indicateur", 
+                         choices = NULL,
+                         selected = "Literacy rate (%)")),
       column(width = 3,
-             selectInput(ns("age_compare"), "Âge", choices = NULL, multiple = TRUE)),
+             selectInput(ns("age_compare"), 
+                         "Âge", 
+                         choices = NULL, 
+                         multiple = TRUE,
+                         selected = "15 to 24 years old")),
       column(width = 3,
              selectInput(ns("sex_compare"), "Sexe",
                          choices = c("Female", "Male", "Total"),
                          multiple = TRUE,
                          selected = c("Female", "Male", "Total")))
-  ),
-  fluidRow(
-    column(width = 12, 
-           plotOutput(ns("graph_compare")
-                      )
-           )
     ),
-  br(), 
-  hr(),
-  fluidRow(column(width = 12,
-                  wellPanel(
-                    h4("ℹ️ Aide à la lecture"),
-                    tags$ul(
-                      tags$li("Les indicateurs affichés sont uniquement ceux disponibles pour tous les pays sélectionnés."),
-                      tags$li("Les libellés d’âge sont regroupés : les pays associés sont indiqués entre parenthèses."),
-                      tags$li("Les couleurs des courbes sont propres à chaque pays."),
-                      tags$li("Les styles de lignes varient selon le sexe :"),
+    # --- UI dynamique Breakdown ---
+    fluidRow(
+      column(width = 3, uiOutput(ns("comp_breakdown_ui"))),
+      column(width = 3, uiOutput(ns("comp_sous_breakdown_ui")))
+    ),
+    br(),
+    fluidRow(
+      column(width = 12, plotOutput(ns("graph_compare")))
+    ),
+    br(), 
+    hr(),
+    fluidRow(column(width = 12,
+                    wellPanel(
+                      h4("ℹ️ Aide à la lecture"),
                       tags$ul(
-                        tags$li("Trait plein → Female"),
-                        tags$li("Tireté long → Male"),
-                        tags$li("Tireté double → Total"),
-                        tags$li("Forme des points : rond/triangle/carré selon sexe")
+                        tags$li("Les indicateurs affichés sont uniquement ceux disponibles pour tous les pays sélectionnés."),
+                        tags$li("Les libellés d’âge sont regroupés : les pays associés sont indiqués entre parenthèses."),
+                        tags$li("Les couleurs des courbes sont propres à chaque pays."),
+                        tags$li("Les styles de lignes varient selon le sexe :"),
+                        tags$ul(
+                          tags$li("Trait plein → Female"),
+                          tags$li("Tireté long → Male"),
+                          tags$li("Tireté double → Total"),
+                          tags$li("Forme des points : rond/triangle/carré selon sexe")
+                        )
                       )
                     )
-                  )))
+    ))
   )
 }
 
@@ -58,7 +69,7 @@ pageTempComparaisonServer <- function(id, dataset) {
     observe({
       updateSelectInput(session, "country_compare",
                         choices = sort(unique(dataset$REF_AREA_LABEL)),
-                        selected = c("Estonia", "Finland"))
+                        selected = c("Estonia", "Brazil"))
     })
     
     # --- Mise à jour des indicateurs selon les pays ---
@@ -73,7 +84,42 @@ pageTempComparaisonServer <- function(id, dataset) {
       })
       
       common_indicators <- sort(Reduce(intersect, indicator_lists))
-      updateSelectInput(session, "indicator_compare", choices = common_indicators)
+      updateSelectInput(session, "indicator_compare", choices = common_indicators, selected = "Literacy rate (%)")
+    })
+    
+    # --- UI dynamique : Breakdown ---
+    output$comp_breakdown_ui <- renderUI({
+      req(input$indicator_compare)
+      df <- dataset %>%
+        filter(INDICATOR_LABEL == input$indicator_compare) %>%
+        filter(!is.na(COMP_BREAKDOWN_1_LABEL),
+               COMP_BREAKDOWN_1_LABEL != "Not applicable") %>%
+        distinct(COMP_BREAKDOWN_1_LABEL)
+      
+      if (nrow(df) > 1) {
+        selectInput(ns("comp_breakdown"),
+                    "Breakdown",
+                    choices = sort(unique(df$COMP_BREAKDOWN_1_LABEL)),
+                    multiple = FALSE)
+      }
+    })
+    
+    # --- UI dynamique : Sub-breakdown ---
+    output$comp_sous_breakdown_ui <- renderUI({
+      req(input$indicator_compare, input$comp_breakdown)
+      df <- dataset %>%
+        filter(INDICATOR_LABEL == input$indicator_compare,
+               COMP_BREAKDOWN_1_LABEL == input$comp_breakdown) %>%
+        filter(!is.na(COMP_BREAKDOWN_2_LABEL),
+               COMP_BREAKDOWN_2_LABEL != "Not applicable") %>%
+        distinct(COMP_BREAKDOWN_2_LABEL)
+      
+      if (nrow(df) > 1) {
+        selectInput(ns("comp_sous_breakdown"),
+                    "Sub-breakdown",
+                    choices = sort(unique(df$COMP_BREAKDOWN_2_LABEL)),
+                    multiple = FALSE)
+      }
     })
     
     # --- Mise à jour des âges selon pays et indicateur ---
@@ -93,7 +139,7 @@ pageTempComparaisonServer <- function(id, dataset) {
         pull(age_country) %>%
         sort()
       
-      updateSelectInput(session, "age_compare", choices = age_grouped)
+      updateSelectInput(session, "age_compare", choices = age_grouped, selected = "15 to 24 years old (Brazil, Estonia)")
     })
     
     # --- Graphique principal ---
@@ -106,10 +152,16 @@ pageTempComparaisonServer <- function(id, dataset) {
         filter(REF_AREA_LABEL %in% input$country_compare,
                INDICATOR_LABEL %in% input$indicator_compare,
                AGE_LABEL %in% selected_ages,
-               SEX_LABEL %in% input$sex_compare) %>%
-        na.omit() %>%
-        mutate(year = as.factor(year))
+               SEX_LABEL %in% input$sex_compare)
       
+      # filtrage par breakdowns si présents
+      if (!is.null(input$comp_breakdown))
+        df <- df %>% filter(COMP_BREAKDOWN_1_LABEL == input$comp_breakdown)
+      
+      if (!is.null(input$comp_sous_breakdown))
+        df <- df %>% filter(COMP_BREAKDOWN_2_LABEL == input$comp_sous_breakdown)
+      
+      df <- df %>% na.omit() %>% mutate(year = as.factor(year))
       if (nrow(df) == 0) return(NULL)
       
       # Palette des pays
@@ -134,8 +186,12 @@ pageTempComparaisonServer <- function(id, dataset) {
         scale_linetype_manual(values = sex_linetypes, name = "Sexe") +
         scale_shape_manual(values = sex_shapes, name = "Sexe") +
         labs(title = input$indicator_compare,
-             subtitle = paste("Âge(s):", paste(input$age_compare, collapse = ", "),
-                              "\nComparaison entre pays:", paste(input$country_compare, collapse = ", ")),
+             subtitle = paste(
+               "Âge(s):", paste(input$age_compare, collapse = ", "),
+               if (!is.null(input$comp_breakdown)) paste0("\nBreakdown: ", input$comp_breakdown) else "",
+               if (!is.null(input$comp_sous_breakdown)) paste0(" / ", input$comp_sous_breakdown) else "",
+               "\nComparaison entre pays:", paste(input$country_compare, collapse = ", ")
+             ),
              x = "Année", y = y_label) +
         theme_minimal(base_size = 13) +
         theme(plot.title = element_text(face = "bold"),
