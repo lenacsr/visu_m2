@@ -1,21 +1,22 @@
 function(input, output, session) {
-  # Cacher la page d'accueil et montrer l'app
+  # PAGE ACCEUIL
   observeEvent(input$enter_app, {
     shinyjs::hide("home_page")
     shinyjs::show("main_app")
   })
   
-  # Retour à la page d'accueil
+  # RETOUR ACCEUIL
   observeEvent(input$back_home, {
     shinyjs::hide("main_app")
     shinyjs::show("home_page")
   })
-  
   observeEvent(input$nav_page, {
-    
     session$sendCustomMessage("triggerResize", list())
   })  
   
+  ##################
+  # NOS PAGFES
+  ##################
   pageComparaisonServer("comp", dataset = gender)
   pageRecapPaysServer("recap", dataset = gender)
   pageACPServer("acp", dataset = gender)
