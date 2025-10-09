@@ -1,7 +1,7 @@
 ########################
 #LIBRARIES
 ########################
-# UI / Shiny
+# Shiny
 library(shiny)
 library(shinyWidgets)
 library(shinycssloaders)
@@ -9,6 +9,7 @@ library(shinyjs)
 library(bslib)
 library(fontawesome)
 library(htmltools)
+library(DT)
 
 # Manip
 library(dplyr)
@@ -23,9 +24,6 @@ library(leaflet.extras2)
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
-
-# TablesShiny
-library(DT)
 
 # WebScrapping
 library(httr)
@@ -98,7 +96,9 @@ source("page/page_carte_threshold.R")
 indicateurs_axes <- list(
   "Éducation" = c(
     "Literacy rate (%)",
-    "Children out of school, primary (Number)"
+    "Children out of school, primary (Number)",
+    "Expected Years of School",
+    "Expected years of schooling"
   ),
   "Économie" = c(
     "Children in employment (% of children ages 7-14)",
@@ -108,13 +108,33 @@ indicateurs_axes <- list(
     "Borrowed from a financial institution (% age 15+)",
     "Borrowed from a savings club (% age 15+)",
     "Borrowed from a store by buying on credit (% age 15+)",
-    "Borrowed from family or friends (% age 15+)"
+    "Borrowed from family or friends (% age 15+)",
+    "Unemployment (%)",
+    "Unemployment by level of education (%)",
+    "Youth illiterate population, 15-24 years (number)"
   ),
   "Santé" = c(
     "Age population, interpolated",
-    "Belief that religion requires female genital mutilation (% who have heard about FGM)"
+    "Belief that religion requires female genital mutilation (% who have heard about FGM)",
+    "Condom use at last high-risk sex (% ages 15-49)",
+    "Life expectancy at age 60 (years)",
+    "Life expectancy at birth (years)",
+    "Mortality from CVD, cancer, diabetes or CRD between exact ages 30 and 70 (%)",
+    "Mortality rate, adult (per 1,000 adults)",
+    "Mortality rate, infant (per 1,000 live births)",
+    "Mortality rate, under-5 (per 1,000 live births)",
+    "Suicide mortality rate (per 100,000 population)",
+    "Survival Rate from Age 15-60",
+    "Total alcohol consumption per capita (liters of pure alcohol, projected estimates, 15+ years of age)"
   ),
-  "Politique" = c()
+  "Politique" = c(
+    "Human Capital Index (HCI) (scale 0-1)",
+    "Length of paid leave (calendar days)",
+    "Mean age at first marriage",
+    "Population (number)",
+    "Rural population (%)",
+    "Urban population (%)"
+  )
 )
 
 
