@@ -7,7 +7,7 @@ library(VIM)
 
 server <- function(input, output, session) {
   
-  # === ONGLET 1 : logique inchangée ===
+  # ONGLET 1 :
   observeEvent(input$country, {
     available_indicators <- data_clean_glo %>%
       filter(REF_AREA_LABEL %in% input$country, !is.na(value)) %>%
@@ -87,7 +87,7 @@ server <- function(input, output, session) {
       theme_minimal(base_size=14)
   })
   
-  # === ONGLET 2 : inchangé ===
+  # ONGLET 2 :
   observeEvent(input$country_compare, {
     indicator_lists <- lapply(input$country_compare, function(p) {
       data_clean_glo %>% filter(REF_AREA_LABEL==p, !is.na(value)) %>% pull(INDICATOR_LABEL) %>% unique()
@@ -146,7 +146,7 @@ server <- function(input, output, session) {
             legend.position="bottom", legend.box="horizontal", legend.text=element_text(size=10))
   })
   
-  # === ONGLET 3 : APERÇU / STATISTIQUES ===
+  # ONGLET 3 : 
   output$total_obs <- renderText({ format(nrow(data_clean_glo), big.mark=" ") })
   output$nb_pays <- renderText({ length(unique(data_clean_glo$REF_AREA_LABEL)) })
   output$nb_indicateurs <- renderText({ length(unique(data_clean_glo$INDICATOR_LABEL)) })
@@ -189,7 +189,7 @@ server <- function(input, output, session) {
       labs(x=NULL, y="Nombre d’observations")
   })
   
-  # === ONGLET 3 : Aperçu des NA ===
+  # ONGLET 3 : 
   output$na_plot <- renderPlot({
     aggr(
       data_clean_glo,

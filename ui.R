@@ -7,7 +7,7 @@ ui <- fluidPage(
   tabsetPanel(
     type = "tabs",
     
-    # === ONGLET 1 : Visualisation par pays ===
+    # ONGLET 1 : visualisation par pays
     tabPanel(
       title = "Visualisation des données par pays",
       br(),
@@ -71,7 +71,7 @@ ui <- fluidPage(
       fluidRow(column(width = 12, plotOutput("graph_bar")))
     ),
     
-    # === ONGLET 2 : Comparaison entre pays ===
+    # ONGLET 2 : comparaison entre pays
     tabPanel(
       title = "Comparaison des données entre pays",
       br(),
