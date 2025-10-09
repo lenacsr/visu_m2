@@ -116,7 +116,7 @@ fluidPage(
       }
       
       .pill-nav {
-        --nav-h: 100px;
+        --nav-h: 70px;
         --pill-pad-x: 20px;
         --pill-gap: 4px;
         --base: linear-gradient(135deg, #CB3452 0%, #D96C81 100%);
@@ -125,7 +125,7 @@ fluidPage(
         --pill-text: white;
         --hover-text: #CB3452;
         
-        width: 1000px;
+        width: 950px;
         display: flex;
         align-items: center;
         opacity: 1;
@@ -227,7 +227,7 @@ fluidPage(
         will-change: transform, opacity;
         opacity: 0;
         transform: translateY(30px);
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
       
       /* Active indicator */
