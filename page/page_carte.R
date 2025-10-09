@@ -22,9 +22,22 @@ PageCarteUI <- function(id) {
         uiOutput(ns("c_age")), 
         
         
-        selectInput(ns("sex"), 
-                    "Select a gender:",
-                    choices = NULL),
+        div(
+          tags$label(
+            `for` = ns("sex"),
+            "Select a gender: ",
+            tags$i(
+              class = "fa fa-info-circle",
+              style = "color: #A2BDF4; cursor: help;",
+              title = "Select Female/Male Ratio to compare. Value > 1 = female advantage, < 1 = male advantage.",
+              `data-toggle` = "tooltip",
+              `data-placement` = "right"
+            )
+          ),
+          selectInput(ns("sex"), 
+                      label = NULL,
+                      choices = NULL)
+        ),
         hr(),
         selectInput(ns("year"), 
                     "Select a year:",
