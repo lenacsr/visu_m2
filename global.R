@@ -84,7 +84,7 @@ source("page/page_comparaison.R")
 source("page/page_statdesc.R")
 source("page/page_carte.R")
 source("page/page_carte_threshold.R")
-
+source("page/page_accueil.R")
 
 
 ########################
@@ -138,7 +138,12 @@ indicateurs_axes <- list(
 )
 
 
-### Palettes
+### 
+
+palette_choice <- reactiveVal("default")
+
+
+palette_daltonian <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
 palette_6 <- c("#FFE100","#F58442","#D96C81","#CB3452","#A2BDF4","#BFB74C")
 palette_continue <- colorRampPalette(palette_6)
 
