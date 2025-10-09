@@ -1123,7 +1123,7 @@ pageCarteThresholdServer <- function(id, dataset) {
           "<strong>%s</strong><br/>%s",
           c_data$name,
           ifelse(c_data$meets_threshold %in% TRUE, 
-                 "<span style='color: green;'>✓ Meets ALL thresholds</span>",
+                 "<span style='color: #F58442;'> Meets ALL thresholds</span>",
                  "<span style='color: #999;'>Does not meet all thresholds</span>")
         ) %>% lapply(htmltools::HTML)
         
