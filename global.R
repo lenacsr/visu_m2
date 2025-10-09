@@ -11,11 +11,13 @@ library(fontawesome)
 library(htmltools)
 library(DT)
 
+
 # Manip
 library(dplyr)
 library(tidyr)
 library(tidyverse)
 library(snakecase)
+library(leaflet)
 
 # Visu
 library(ggplot2)
@@ -24,6 +26,7 @@ library(leaflet.extras2)
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
+
 
 # WebScrapping
 library(httr)
@@ -129,20 +132,15 @@ indicateurs_axes <- list(
   ),
   "Politique" = c(
     "Human Capital Index (HCI) (scale 0-1)",
-    "Length of paid leave (calendar days)",
+    "Length of paid leave (calendar days)", 
     "Mean age at first marriage",
     "Population (number)",
     "Rural population (%)",
-    "Urban population (%)"
-  )
+    "Urban population (%)")
 )
 
-
-### 
-
+### Palettes
 palette_choice <- reactiveVal("default")
-
-
 palette_daltonian <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
 palette_6 <- c("#FFE100","#F58442","#D96C81","#CB3452","#A2BDF4","#BFB74C")
 palette_continue <- colorRampPalette(palette_6)

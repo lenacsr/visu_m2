@@ -1,5 +1,8 @@
 # === pages/page_visualisation.R ===
 
+# ---- PALETTE ----
+palette_6 <- c("#FFE100", "#F58442", "#D96C81", "#CB3452", "#A2BDF4", "#BFB74C")
+
 pageVisualisationUI <- function(id) {
   ns <- NS(id)
   
@@ -19,7 +22,6 @@ pageVisualisationUI <- function(id) {
                             selected = c("Female", "Male", "Total")))
     ),
     
-    # --- UI dynamique : Breakdown et Sub-breakdown ---
     fluidRow(
       column(3, uiOutput(ns("comp_breakdown_ui"))),
       column(3, uiOutput(ns("comp_sous_breakdown_ui")))
@@ -71,7 +73,6 @@ pageVisualisationServer <- function(id, dataset) {
       
       df_indicator <- dataset %>% filter(INDICATOR_LABEL == input$indicator)
       
-      # Breakdown principal
       if (!all(df_indicator$COMP_BREAKDOWN_1_LABEL %in% c("Not Applicable", NA))) {
         breakdown_choices <- sort(unique(df_indicator$COMP_BREAKDOWN_1_LABEL))
         output$comp_breakdown_ui <- renderUI({
@@ -84,7 +85,6 @@ pageVisualisationServer <- function(id, dataset) {
         output$comp_breakdown_ui <- renderUI(NULL)
       }
       
-      # Sub-breakdown
       if (!all(df_indicator$COMP_BREAKDOWN_2_LABEL %in% c("Not Applicable", NA))) {
         sous_breakdown_choices <- sort(unique(df_indicator$COMP_BREAKDOWN_2_LABEL))
         output$comp_sous_breakdown_ui <- renderUI({
@@ -107,7 +107,6 @@ pageVisualisationServer <- function(id, dataset) {
                AGE_LABEL == input$age,
                SEX_LABEL %in% input$sex)
       
-      # Application des breakdowns si présents
       if (!is.null(input$comp_breakdown)) {
         df <- df %>% filter(COMP_BREAKDOWN_1_LABEL == input$comp_breakdown)
       }
@@ -134,8 +133,12 @@ pageVisualisationServer <- function(id, dataset) {
         if (!is.null(input$comp_sous_breakdown)) paste("\nSous-breakdown :", input$comp_sous_breakdown) else ""
       )
       
+      n_cat <- length(unique(df$SEX_LABEL))
+      colors <- if (n_cat <= length(palette_6)) palette_6[1:n_cat] else colorRampPalette(palette_6)(n_cat)
+      
       ggplot(df, aes(x = year, y = value, group = SEX_LABEL, color = SEX_LABEL)) +
-        geom_point() + geom_line() +
+        geom_point(size = 2) + geom_line(linewidth = 1) +
+        scale_color_manual(values = colors) +
         labs(title = input$indicator,
              subtitle = subtitle_text,
              x = "Année", y = y_label, color = "Sexe") +
@@ -201,9 +204,13 @@ pageVisualisationServer <- function(id, dataset) {
         if (!is.null(input$comp_sous_breakdown)) paste("\nSous-breakdown :", input$comp_sous_breakdown) else ""
       )
       
+      n_cat <- length(unique(df$SEX_LABEL))
+      fill_colors <- if (n_cat <= length(palette_6)) palette_6[1:n_cat] else colorRampPalette(palette_6)(n_cat)
+      
       ggplot(df, aes(x = SEX_LABEL, y = value, fill = SEX_LABEL)) +
         geom_bar(stat = "identity") +
         geom_text(aes(label = round(value, 2)), vjust = -0.5) +
+        scale_fill_manual(values = fill_colors) +
         coord_cartesian(ylim = c(ylim_inf, ylim_sup)) +
         labs(title = input$indicator,
              subtitle = subtitle_text,
