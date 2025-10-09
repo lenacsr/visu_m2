@@ -164,9 +164,11 @@ pageTempComparaisonServer <- function(id, dataset) {
       df <- df %>% na.omit() %>% mutate(year = as.factor(year))
       if (nrow(df) == 0) return(NULL)
       
-      # Palette des pays
-      country_palette <- RColorBrewer::brewer.pal(min(8, length(unique(df$REF_AREA_LABEL))), "Set2")
-      names(country_palette) <- unique(df$REF_AREA_LABEL)
+      # --- Palette personnalisée pour les pays ---
+      palette_6 <- c("#FFE100", "#F58442", "#D96C81", "#CB3452", "#A2BDF4", "#BFB74C")
+      country_colors <- rep(palette_6, length.out = length(unique(df$REF_AREA_LABEL)))
+      names(country_colors) <- unique(df$REF_AREA_LABEL)
+      country_palette <- country_colors
       
       # Styles de ligne et forme des points selon le sexe
       sex_linetypes <- c("Female" = "solid", "Male" = "longdash", "Total" = "twodash")

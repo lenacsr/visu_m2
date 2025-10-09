@@ -3,6 +3,22 @@
 PageCarteThresholdUI <- function(id) {
   ns <- NS(id)
   fluidPage(
+    tags$head(
+      tags$style(HTML("
+    .irs--shiny .irs-bar {
+      background: #A2BDF4 !important;
+      border-top: 1px solid #A2BDF4 !important;
+      border-bottom: 1px solid #A2BDF4 !important;
+      height: 8px !important;
+    }
+    
+    .irs--shiny .irs-from, 
+    .irs--shiny .irs-to, 
+    .irs--shiny .irs-single {
+      background: #A2BDF4 !important;
+    }
+  "))
+    ),
     titlePanel("Filter countries by indicator threshold"),
     
     sidebarLayout(
@@ -935,7 +951,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       return('<div class="info legend leaflet-control" style="background: white; padding: 6px 8px; border: 2px solid rgba(0,0,0,0.2); border-radius: 5px;">
         <div style="font-weight: bold; margin-bottom: 8px;">Countries Status</div>
         <div style="margin-bottom: 5px;">
-          <i style="background: #2ECC71; width: 20px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i>
+          <i style="background: #F58442; width: 20px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i>
           <span>Meet ALL thresholds</span>
         </div>
         <div style="clear: both;">
@@ -1123,7 +1139,7 @@ pageCarteThresholdServer <- function(id, dataset) {
           "<strong>%s</strong><br/>%s",
           c_data$name,
           ifelse(c_data$meets_threshold %in% TRUE, 
-                 "<span style='color: green;'>✓ Meets ALL thresholds</span>",
+                 "<span style='color: green;'> Meets ALL thresholds</span>",
                  "<span style='color: #999;'>Does not meet all thresholds</span>")
         ) %>% lapply(htmltools::HTML)
         
