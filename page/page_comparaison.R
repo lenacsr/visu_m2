@@ -1,6 +1,6 @@
-# === pages/page_comparaison.R ===
+### Comparaison pays
 
-# --- UI du module ---  
+## UI
 pageTempComparaisonUI <- function(id) {
   ns <- NS(id)
   
@@ -29,7 +29,7 @@ pageTempComparaisonUI <- function(id) {
                          multiple = TRUE,
                          selected = c("Female", "Male", "Total")))
     ),
-    # --- UI dynamique Breakdown ---
+    # Breakdown
     fluidRow(
       column(width = 3, uiOutput(ns("comp_breakdown_ui"))),
       column(width = 3, uiOutput(ns("comp_sous_breakdown_ui")))
@@ -41,19 +41,19 @@ pageTempComparaisonUI <- function(id) {
   )
 }
 
-# --- Server du module ---
+## Server
 pageTempComparaisonServer <- function(id, dataset) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
-    # --- Initialisation des pays ---
+    # Choix pays
     observe({
       updateSelectInput(session, "country_compare",
                         choices = sort(unique(dataset$REF_AREA_LABEL)),
                         selected = c("Estonia", "Brazil"))
     })
     
-    # --- Mise à jour des indicateurs selon les pays ---
+    # Choix indicateurs en fonction des pays
     observeEvent(input$country_compare, {
       req(input$country_compare)
       
@@ -68,7 +68,7 @@ pageTempComparaisonServer <- function(id, dataset) {
       updateSelectInput(session, "indicator_compare", choices = common_indicators, selected = "Literacy rate (%)")
     })
     
-    # --- UI dynamique : Breakdown ---
+    # Breakdown
     output$comp_breakdown_ui <- renderUI({
       req(input$indicator_compare)
       df <- dataset |>
@@ -85,7 +85,7 @@ pageTempComparaisonServer <- function(id, dataset) {
       }
     })
     
-    # --- UI dynamique : Sub-breakdown ---
+    # Sub Breakdown
     output$comp_sous_breakdown_ui <- renderUI({
       req(input$indicator_compare, input$comp_breakdown)
       df <- dataset |>
@@ -103,7 +103,7 @@ pageTempComparaisonServer <- function(id, dataset) {
       }
     })
     
-    # --- Mise à jour des âges selon pays et indicateur ---
+    # Choix age en fonction pays et indicateurs
     observeEvent(list(input$country_compare, input$indicator_compare), {
       req(input$country_compare, input$indicator_compare)
       
@@ -123,7 +123,7 @@ pageTempComparaisonServer <- function(id, dataset) {
       updateSelectInput(session, "age_compare", choices = age_grouped, selected = "15 to 24 years old (Brazil, Estonia)")
     })
     
-    # --- Graphique principal ---
+    # Graph
     output$graph_compare <- renderPlot({
       req(input$country_compare, input$indicator_compare, input$age_compare, input$sex_compare)
       
@@ -135,7 +135,7 @@ pageTempComparaisonServer <- function(id, dataset) {
                AGE_LABEL %in% selected_ages,
                SEX_LABEL %in% input$sex_compare)
       
-      # filtrage par breakdowns si présents
+      # Filtre Breakdown
       if (!is.null(input$comp_breakdown))
         df <- df |> filter(COMP_BREAKDOWN_1_LABEL == input$comp_breakdown)
       
@@ -145,13 +145,12 @@ pageTempComparaisonServer <- function(id, dataset) {
       df <- df |> na.omit() |> mutate(year = as.factor(year))
       if (nrow(df) == 0) return(NULL)
       
-      # --- Palette personnalisée pour les pays ---
+      # Palette de couleurs (la dynamique marche pas)
       palette_6 <- c("#FFE100", "#F58442", "#D96C81", "#CB3452", "#A2BDF4", "#BFB74C")
       country_colors <- rep(palette_6, length.out = length(unique(df$REF_AREA_LABEL)))
       names(country_colors) <- unique(df$REF_AREA_LABEL)
       country_palette <- country_colors
       
-      # Styles de ligne et forme des points selon le sexe
       sex_linetypes <- c("Female" = "solid", "Male" = "longdash", "Total" = "twodash")
       sex_shapes <- c("Female" = 16, "Male" = 17, "Total" = 15)
       

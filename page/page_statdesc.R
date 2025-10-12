@@ -1,6 +1,4 @@
-# === pages/page3_statdesc.R ===
-
-# ---- PACKAGES ----
+### Stat descrip
 library(shiny)
 library(dplyr)
 library(ggplot2)
@@ -9,10 +7,10 @@ library(VIM)
 library(scales)
 library(tidyr)
 
-# ---- PALETTE ----
+# Palette de couleurs (la dynamique marche pas)
 palette_6 <- c("#FFE100", "#F58442", "#D96C81", "#CB3452", "#A2BDF4", "#BFB74C")
 
-# ---- UI ----
+## UI
 pageUI_stat_desc <- function(id) {
   ns <- NS(id)
   
@@ -21,11 +19,11 @@ pageUI_stat_desc <- function(id) {
     tabsetPanel(
       type = "tabs",
       
-      # --- Onglet 1 : Aperçu des données ---
+      # Onglet 1 Aperçu des données
       tabPanel("Glimpse at the data",
                fluidRow(column(12, tags$hr())),
                
-               # Statistiques globales
+               # Stats globales
                fluidRow(
                  column(3, wellPanel(h4("Number of observations"),
                                      textOutput(ns("total_obs")),
@@ -55,7 +53,7 @@ pageUI_stat_desc <- function(id) {
                ),
                
                br(),
-               # Par pays (top/bottom 15)
+               # Distribution par pays 
                fluidRow(
                  column(12, h4("By countries"))
                ),
@@ -65,7 +63,7 @@ pageUI_stat_desc <- function(id) {
                )
       ),
       
-      # --- Onglet 2 : Aperçu des NA ---
+      # Onglet 2 Aperçu des NA
       tabPanel("NA glimpse",
                fluidRow(
                  column(
@@ -85,17 +83,17 @@ pageUI_stat_desc <- function(id) {
   )
 }
 
-# ---- SERVER ----
+## Server
 pageServer_stat_desc <- function(id, dataset) {
   moduleServer(id, function(input, output, session) {
     
-    # --- Indicateurs globaux ---
+    # Stats globales
     output$total_obs <- renderText({ format(nrow(dataset), big.mark = " ") })
     output$nb_pays <- renderText({ length(unique(dataset$REF_AREA_LABEL)) })
     output$nb_indicateurs <- renderText({ length(unique(dataset$INDICATOR_LABEL)) })
     output$nb_annees <- renderText({ length(unique(dataset$year)) })
     
-    # --- Graphique par sexe ---
+    # Distribution par sexe
     output$sex_distribution_plot <- renderPlot({
       df <- dataset |>
         group_by(SEX_LABEL) |>
@@ -114,7 +112,7 @@ pageServer_stat_desc <- function(id, dataset) {
         labs(x = NULL, y = "Number of observations")
     })
     
-    # --- Graphique par âge ---
+    # Distribution par âge
     output$age_distribution_plot <- renderPlot({
       df <- dataset |>
         group_by(AGE_LABEL) |>
@@ -133,7 +131,7 @@ pageServer_stat_desc <- function(id, dataset) {
         labs(x = NULL, y = "Number of observations")
     })
     
-    # --- Graphique par unité ---
+    # Distribution par unité
     output$unit_distribution_plot <- renderPlot({
       df <- dataset |>
         group_by(UNIT_MEASURE_LABEL) |>
@@ -155,7 +153,7 @@ pageServer_stat_desc <- function(id, dataset) {
         labs(x = NULL, y = "Number of observations")
     })
     
-    # --- Graphique Top 15 pays ---
+    # Distribution par pays
     output$top_countries_plot <- renderPlot({
       df <- dataset |>
         filter(!is.na(value)) |>
@@ -178,7 +176,6 @@ pageServer_stat_desc <- function(id, dataset) {
              title = "Top 15 countries with most available values")
     })
     
-    # --- Graphique Bottom 15 pays ---
     output$bottom_countries_plot <- renderPlot({
       df <- dataset |>
         filter(!is.na(value)) |>
@@ -201,7 +198,7 @@ pageServer_stat_desc <- function(id, dataset) {
              title = "Top 15 countries with least available values")
     })
     
-    # --- Onglet 2 : NA ---
+    # Onglet 2 NA
     observe({
       updateSelectInput(session, "select_indicators",
                         choices = sort(unique(dataset$INDICATOR_LABEL)),

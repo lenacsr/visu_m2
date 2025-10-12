@@ -1,8 +1,9 @@
-# === pages/page_visualisation.R ===
+### Visualisation pays
 
-# ---- PALETTE ----
+# Palette de couleurs (la dynamique marche pas)
 palette_6 <- c("#FFE100", "#F58442", "#D96C81", "#CB3452", "#A2BDF4", "#BFB74C")
 
+## UI 
 pageVisualisationUI <- function(id) {
   ns <- NS(id)
   
@@ -37,12 +38,12 @@ pageVisualisationUI <- function(id) {
   )
 }
 
-
+## Server
 pageVisualisationServer <- function(id, dataset) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
-    # --- MISE À JOUR DES CHOIX ---
+    # Choix indicateurs en fonction du pays
     observe({
       updateSelectInput(session, "country",
                         choices = sort(unique(dataset$REF_AREA_LABEL)),
@@ -67,7 +68,7 @@ pageVisualisationServer <- function(id, dataset) {
                         selected = available_ages[1])
     })
     
-    # --- UI dynamique : Breakdown & Sub-breakdown ---
+    # Breakdown + Sub Breakdown
     observeEvent(input$indicator, {
       req(input$indicator)
       
@@ -98,7 +99,6 @@ pageVisualisationServer <- function(id, dataset) {
       }
     })
     
-    # --- RÉACTIF PRINCIPAL ---
     data_filtered <- reactive({
       req(input$age, input$sex)
       df <- dataset %>%
@@ -117,7 +117,7 @@ pageVisualisationServer <- function(id, dataset) {
       df %>% na.omit() %>% mutate(year = as.factor(year))
     })
     
-    # --- GRAPHIQUE PRINCIPAL ---
+    # Graph 1 
     output$graph <- renderPlot({
       df <- data_filtered()
       if (nrow(df) == 0) return(NULL)
@@ -145,7 +145,7 @@ pageVisualisationServer <- function(id, dataset) {
         theme_minimal(base_size = 13)
     })
     
-    # --- MISE À JOUR DES ANNÉES ---
+    # Choix années en fonction des pays et indicateurs
     observeEvent(list(input$country, input$indicator, input$age, input$sex,
                       input$comp_breakdown, input$comp_sous_breakdown), {
                         available_years <- dataset %>%
@@ -166,7 +166,7 @@ pageVisualisationServer <- function(id, dataset) {
                                           selected = tail(available_years, 1))
                       })
     
-    # --- DONNÉES POUR GRAPHIQUE EN BARRES ---
+    # Graph 2
     data_bar <- reactive({
       req(input$country, input$indicator, input$age, input$sex, input$year_bar)
       df <- dataset %>%
@@ -186,7 +186,6 @@ pageVisualisationServer <- function(id, dataset) {
       df %>% na.omit()
     })
     
-    # --- GRAPHIQUE EN BARRES ---
     output$graph_bar <- renderPlot({
       df <- data_bar()
       if (nrow(df) == 0) return(NULL)
