@@ -4,6 +4,7 @@ PageCarteThresholdUI <- function(id) {
   ns <- NS(id)
   fluidPage(
     tags$head(
+      # prblm de slider input invisible réglé
       tags$style(HTML("
     .irs--shiny .irs-bar {
       background: #A2BDF4 !important;
@@ -85,7 +86,7 @@ PageCarteThresholdUI <- function(id) {
           )
         ),
         
-        # Multiple indicators mode UI
+        #Multiple indicators mode UI
         conditionalPanel(
           condition = "input.mode == 'multiple'",
           ns = ns,
@@ -139,10 +140,10 @@ PageCarteThresholdUI <- function(id) {
 pageCarteThresholdServer <- function(id, dataset) {
   moduleServer(id, function(input, output, session) {
     
-    # Reactive value to store multiple indicators
+    # Reactive pour mode multiple
     multi_indicators <- reactiveVal(list())
     
-    # Counter for unique IDs
+    # compteur pour des ID uniques 
     indicator_counter <- reactiveVal(0)
     
     # Charger les données géographiques
@@ -150,7 +151,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       ne_countries(scale = "medium", returnclass = "sf")
     })
     
-    # Initialize indicator choices
+    # initialisation des indicateurs pour pas se retrouver aves une carte vide
     observe({
       if (!exists("gender")) return(NULL)
       
@@ -163,7 +164,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       updateSelectInput(session, "indicator", choices = c_choices_ind)
     })
     
-    # Dynamic UI for multiple indicators
+    # Dynamique UI pour les indicateurs multi
     output$multi_indicators_ui <- renderUI({
       ns <- session$ns
       indicators_list <- multi_indicators()
@@ -218,7 +219,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       })
     })
     
-    # Helper function to get indicator choices
+    # fonction pour choix indicateur
     get_indicator_choices <- function() {
       if (!exists("gender")) return(NULL)
       
@@ -230,14 +231,14 @@ pageCarteThresholdServer <- function(id, dataset) {
       setNames(c_indicators$INDICATOR, c_indicators$INDICATOR_LABEL)
     }
     
-    # Add new indicator
+    # pOUR RAJOUTER UN INDICATEUR (en mode multi)
     observeEvent(input$add_indicator, {
       new_id <- indicator_counter() + 1
       indicator_counter(new_id)
       
       current_list <- multi_indicators()
       
-      # Get first available indicator
+      # on prend le premier indicateur dispo
       all_indicators <- get_indicator_choices()
       first_indicator <- if (length(all_indicators) > 0) all_indicators[1] else NULL
       
@@ -250,7 +251,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       multi_indicators(c(current_list, list(new_indicator)))
     })
     
-    # Remove indicator (dynamic observers)
+    # pour enlever un indicateur du mode multi
     observe({
       indicators_list <- multi_indicators()
       
@@ -266,7 +267,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       })
     })
     
-    # Dynamic UI for each indicator in multiple mode
+    # Dynamique UI pour chaque indicateur en mode multi
     observe({
       indicators_list <- multi_indicators()
       
@@ -324,7 +325,7 @@ pageCarteThresholdServer <- function(id, dataset) {
           }
         })
         
-        # Sub-breakdown UI
+        # Sous-breakdown UI
         output[[paste0("comp_sous_breakdown_ui_", ind_id)]] <- renderUI({
           ns <- session$ns
           indicator_val <- input[[paste0("indicator_", ind_id)]]
@@ -364,7 +365,7 @@ pageCarteThresholdServer <- function(id, dataset) {
           }
         })
         
-        # Sex choices
+        # choix sex
         observe({
           indicator_val <- input[[paste0("indicator_", ind_id)]]
           if (is.null(indicator_val)) return(NULL)
@@ -391,7 +392,7 @@ pageCarteThresholdServer <- function(id, dataset) {
           
           if (is.null(indicator_val) || is.null(threshold_type)) return(NULL)
           
-          # Calculate value range
+          # Calcul range
           c_range <- calculate_value_range_multi(ind_id)
           
           if (threshold_type == "between") {
@@ -420,7 +421,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       })
     })
     
-    # Helper function to calculate value range for multi mode
+    # Fonction pour calculer le range des indicateur en mode multi
     calculate_value_range_multi <- function(ind_id) {
       indicator_val <- input[[paste0("indicator_", ind_id)]]
       sex_val <- input[[paste0("sex_", ind_id)]]
@@ -473,8 +474,8 @@ pageCarteThresholdServer <- function(id, dataset) {
       list(min = c_min, max = c_max)
     }
     
-    # [SINGLE MODE CODE - keeping all your original single mode code]
-    # Year display for single mode
+    # SINGLE MODE
+    #l'année (pour single mode)
     output$year_display <- renderUI({
       if (!exists("gender") || input$mode != "single") return(NULL)
       req(input$indicator)
@@ -496,7 +497,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       }
     })
     
-    # Value range for single mode
+    #range pour single mode
     c_value_range <- reactive({
       if (!exists("gender") || input$mode != "single") return(list(min = 0, max = 100))
       req(input$indicator, input$sex)
@@ -544,7 +545,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       list(min = c_min, max = c_max)
     })
     
-    # Threshold UIs for single mode
+    #Threshold UI pour le single mode
     output$threshold_range_ui <- renderUI({
       if (input$mode != "single") return(NULL)
       ns <- session$ns
@@ -584,7 +585,7 @@ pageCarteThresholdServer <- function(id, dataset) {
                    step = 0.1)
     })
     
-    # Update sex choices for single mode
+    # Update choix sex pour le mode ui
     observe({
       if (!exists("gender") || input$mode != "single") return(NULL)
       req(input$indicator)
@@ -613,7 +614,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       }
     })
     
-    # Breakdown UIs for single mode
+    # Breakdown UI pour le single mode
     output$comp_breakdown_ui <- renderUI({
       if (input$mode != "single") return(NULL)
       req(input$indicator)
@@ -650,7 +651,7 @@ pageCarteThresholdServer <- function(id, dataset) {
         NULL
       }
     })
-    
+    #sous comp breakdown (on ne l'affiche pas s'il yen a pas et on update les autre trucs en fonction de)
     output$comp_sous_breakdown_ui <- renderUI({
       if (input$mode != "single") return(NULL)
       req(input$indicator)
@@ -695,7 +696,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       )
     })
     
-    # Filtered data - SINGLE MODE
+    # Filtered data pour le single mode
     c_filtered_data_single <- reactive({
       if (!exists("gender") || input$mode != "single") return(NULL)
       req(input$indicator, input$sex, input$threshold_type)
@@ -761,20 +762,20 @@ pageCarteThresholdServer <- function(id, dataset) {
                SEX_LABEL, AGE_LABEL, year, value, meets_threshold)
     })
     
-    # Filtered data - MULTIPLE MODE
+    # Filtered data pour le mode multi
     c_filtered_data_multi <- reactive({
       if (!exists("gender") || input$mode != "multiple") return(NULL)
       
       indicators_list <- multi_indicators()
       if (length(indicators_list) == 0) return(NULL)
       
-      # Get all countries from world data
+      
       all_countries <- c_world() %>%
         st_drop_geometry() %>%
         select(iso_a3, name) %>%
         rename(REF_AREA = iso_a3, REF_AREA_LABEL = name)
       
-      # For each indicator, get countries that meet threshold
+      # POUR CHAQUE INDICATEUR ON RECUP LES PAYS DANS LES SEUILS
       countries_by_indicator <- lapply(indicators_list, function(ind) {
         ind_id <- ind$id
         indicator_val <- input[[paste0("indicator_", ind_id)]]
@@ -821,7 +822,7 @@ pageCarteThresholdServer <- function(id, dataset) {
           slice(1) %>%
           ungroup()
         
-        # Apply threshold
+        # ON MET LES SEUILS
         if (threshold_type == "between") {
           threshold_val <- input[[paste0("threshold_range_", ind_id)]]
           if (is.null(threshold_val)) return(NULL)
@@ -844,19 +845,19 @@ pageCarteThresholdServer <- function(id, dataset) {
           distinct()
       })
       
-      # Remove NULL results
+
       countries_by_indicator <- countries_by_indicator[!sapply(countries_by_indicator, is.null)]
       
       if (length(countries_by_indicator) == 0) return(NULL)
       
-      # Find countries that appear in ALL indicators (intersection)
+      # Les pays qui sont dans tt les indicateur
       meeting_countries <- Reduce(function(x, y) {
         inner_join(x, y, by = "REF_AREA")
       }, countries_by_indicator)
       
       if (is.null(meeting_countries) || nrow(meeting_countries) == 0) return(NULL)
       
-      # Join with country names
+      # Join avec les noms des pays
       result <- all_countries %>%
         inner_join(meeting_countries, by = "REF_AREA") %>%
         mutate(meets_threshold = TRUE)
@@ -864,7 +865,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       result
     })
     
-    # Combined filtered data reactive
+    # on combine avec filtered data reactive
     c_filtered_data <- reactive({
       if (input$mode == "single") {
         c_filtered_data_single()
@@ -887,7 +888,7 @@ pageCarteThresholdServer <- function(id, dataset) {
             by = c("iso_a3" = "REF_AREA")
           )
       } else {
-        # Multiple mode: uniform color for countries meeting all thresholds
+        # Mode multi (on a qu'une couleur)
         c_world() %>%
           left_join(
             c_data %>% select(REF_AREA, meets_threshold),
@@ -897,7 +898,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       }
     })
     
-    # Create legend HTML
+    # Creation de la legende HTML
     c_create_legend_html <- function(c_pal, c_values, c_sex_input, c_indicator_code) {
       c_vals <- c_values[!is.na(c_values)]
       c_vals <- as.numeric(c_vals)
@@ -946,7 +947,7 @@ pageCarteThresholdServer <- function(id, dataset) {
   </div>', c_legend_title, c_format_max, c_format_min)
     }
     
-    # Create legend for multiple mode
+    #Legende mode multi
     c_create_legend_multi <- function() {
       return('<div class="info legend leaflet-control" style="background: white; padding: 6px 8px; border: 2px solid rgba(0,0,0,0.2); border-radius: 5px;">
         <div style="font-weight: bold; margin-bottom: 8px;">Countries Status</div>
@@ -975,7 +976,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       }
       
       if (input$mode == "single") {
-        # SINGLE MODE MAP
+        #SINGLE MODE MAP
         req(input$indicator)
         
         c_indicator_name <- gender %>%
@@ -1118,10 +1119,10 @@ pageCarteThresholdServer <- function(id, dataset) {
           ))
         
       } else {
-        # MULTIPLE MODE MAP
+        #MODE MULTI MAP
         indicators_list <- multi_indicators()
         
-        # Build title
+        #TITRE
         c_titre <- paste0("Countries meeting ALL thresholds for ", length(indicators_list), " indicators")
         
         c_titre_html <- tags$div(
@@ -1183,7 +1184,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       }
     })
     
-    # Statistics
+    # Statistiques
     output$stats <- renderPrint({
       c_data <- c_filtered_data()
       
@@ -1211,7 +1212,7 @@ pageCarteThresholdServer <- function(id, dataset) {
           cat("Median:", round(median(c_data_meeting$value, na.rm = TRUE), 2), "\n")
         }
       } else {
-        # Multiple mode statistics
+        # Les stats pour le mode multi
         indicators_list <- multi_indicators()
         c_meeting <- sum(c_data$meets_threshold, na.rm = TRUE)
         
@@ -1228,7 +1229,7 @@ pageCarteThresholdServer <- function(id, dataset) {
       }
     })
     
-    # Data preview table
+    #ptit recap des données
     output$filtered_data <- renderTable({
       c_data <- c_filtered_data()
       
